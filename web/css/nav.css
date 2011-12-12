@@ -1,0 +1,10 @@
+#nav {  
+    opacity: .5;  
+    filter: alpha(opacity=50);  
+    background: #cccccc;  
+    width: 100%;  
+    height: 50px;  
+    position: fixed;  
+    _position: absolute;  
+    top: 0;
+}
