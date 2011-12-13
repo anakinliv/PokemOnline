@@ -536,6 +536,86 @@ public class Database {
         return 3;
     }
 
+    public Type getType(int tid) {
+        Type result = null;
+        String sql = String.format("SELECT typename FROM type WHERE typeid = '%d'", tid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next())
+                result = new Type(tid, rs.getString("typename"));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
+    public Skill getSkill(int sid) {
+        Skill result = null;
+        String sql = String.format("SELECT typeid, skillname, description FROM skill WHERE skillid = '%d'", sid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next())
+                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
+    public Pokemon getPokemon(int pmid) {
+        Pokemon result = null;
+        String sql = String.format("SELECT typeid, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp FROM pokemon WHERE pmid = '%d'", pmid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next())
+                result = new Pokemon(pmid, rs.getString("name"), rs.getInt("hp"), rs.getInt("attack"), rs.getInt("defense"), rs.getInt("sattack"), rs.getInt("sdefense"), rs.getInt("speed"), rs.getInt("catchrate"), rs.getInt("levelup_exp"), getType(rs.getInt("typeid")));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
+    public Pet getPet(int petid) {
+        Pet result = null;
+        String sql = String.format("SELECT pmid, String name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pokemon WHERE petid = '%d'", petid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next())
+                result = new Pet(petid, rs.getString("name"), rs.getInt("max_hp"), rs.getInt("cur_hp"), rs.getInt("intimate"), rs.getInt("personal_hp"), rs.getInt("personal_attack"), rs.getInt("personal_defense"), rs.getInt("personal_sattack"), rs.getInt("personal_sdefense"), rs.getInt("personal_speed"), rs.getInt("effort_hp"), rs.getInt("effort_attack"), rs.getInt("effort_defense"), rs.getInt("effort_sattack"), rs.getInt("effort_sdefense"), rs.getInt("effort_speed"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("pm_status"), getPokemon(rs.getInt("pmid")));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
     public User logUser(String username, String password) {
         String sql = String.format("SELECT userid, username, type FROM user where username = '%s' and password = '%s'", username, password);
         User user = null;
