@@ -598,13 +598,50 @@ public class Database {
 
     public Pet getPet(int petid) {
         Pet result = null;
-        String sql = String.format("SELECT pmid, String name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pokemon WHERE petid = '%d'", petid);
+        String sql = String.format("SELECT pmid, name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pet WHERE petid = '%d'", petid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
                 result = new Pet(petid, rs.getString("name"), rs.getInt("max_hp"), rs.getInt("cur_hp"), rs.getInt("intimate"), rs.getInt("personal_hp"), rs.getInt("personal_attack"), rs.getInt("personal_defense"), rs.getInt("personal_sattack"), rs.getInt("personal_sdefense"), rs.getInt("personal_speed"), rs.getInt("effort_hp"), rs.getInt("effort_attack"), rs.getInt("effort_defense"), rs.getInt("effort_sattack"), rs.getInt("effort_sdefense"), rs.getInt("effort_speed"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("pm_status"), getPokemon(rs.getInt("pmid")));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
+    public PetsOfAUser getPetsOfAUser(int uid) {
+        PetsOfAUser result = null;
+        String sql = String.format("SELECT pet_1, pet_2, pet_3, pet_4, pet_5, pet_6 FROM user WHERE userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next()) {
+                Vector<Pet> activePets = new Vector<Pet>();
+                Vector<Pet> petsInBox = new Vector<Pet>();
+                for (int i = 1;i <= PetsOfAUser.MAX_ACTIVE_PET_COUNT;++i)
+                {
+                    String petidStr = rs.getString("pet_" + i);
+                    if (petidStr != null)
+                    {
+                        Integer petid = Integer.parseInt(petidStr);
+                        activePets.add(getPet(petid.intValue()));
+                    }
+                }
+                sql = String.format("SELECT petid FROM box WHERE userid = '%d'", uid);
+                stmt.execute(sql);
+                rs = stmt.getResultSet();
+                while (rs.next())
+                    petsInBox.add(getPet(rs.getInt("petid")));
+                result = new PetsOfAUser(uid, activePets, petsInBox);
+            }
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors

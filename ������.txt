@@ -1,0 +1,2 @@
+有些不会变的表示原形的东西可以在Database类里面做缓冲的
+现有的：Type, Effect, Item, Pokemon, Skill

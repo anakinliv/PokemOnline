@@ -12,7 +12,7 @@ import java.util.Vector;
  * @author Sidney
  */
 public class PetsOfAUser {
-    static final int MAX_ACTIVE_PET_COUNT = 6;
+    public static final int MAX_ACTIVE_PET_COUNT = 6;
     int uid;
     Vector<Pet> activePets;
     Vector<Pet> petsInBox;
