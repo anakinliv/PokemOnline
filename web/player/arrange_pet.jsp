@@ -15,8 +15,12 @@
         response.sendRedirect("../index.jsp");
     }
     User user = (User)obj;
-%>
 
+    obj = request.getSession().getAttribute("pet_list");
+    if (obj == null)
+        response.sendRedirect("index.jsp");
+    PetsOfAUser pets = (PetsOfAUser) obj;
+%>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -30,6 +34,9 @@
         </div>
         <div id="main">
             管理宠物
+<%
+    request.getSession().removeAttribute("pet_list");
+%>
         </div>
     </body>
 </html>

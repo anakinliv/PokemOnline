@@ -5,11 +5,14 @@
 
 package com.pokemon.structure;
 
+import java.util.Vector;
+
 /**
  *
  * @author Sidney
  */
 public class Pet {
+    public static final int MAX_SKILL_PERR_PET = 4;
     int petid;
     String name;
     int max_hp;
@@ -31,8 +34,9 @@ public class Pet {
     int exp;
     int pm_status;
     Pokemon pokemon;
+    Vector<Skill> skills;
 
-    public Pet(int petid, String name, int max_hp, int cur_hp, int intimate, int personal_hp, int personal_attack, int personal_defense, int personal_sattack, int personal_sdefense, int personal_speed, int effort_hp, int effort_attack, int effort_defense, int effort_sattack, int effort_sdefense, int effort_speed, int level, int exp, int pm_status, Pokemon pokemon) {
+    public Pet(int petid, String name, int max_hp, int cur_hp, int intimate, int personal_hp, int personal_attack, int personal_defense, int personal_sattack, int personal_sdefense, int personal_speed, int effort_hp, int effort_attack, int effort_defense, int effort_sattack, int effort_sdefense, int effort_speed, int level, int exp, int pm_status, Pokemon pokemon, Vector<Skill> skills) {
         this.petid = petid;
         this.name = name;
         this.max_hp = max_hp;
@@ -54,6 +58,7 @@ public class Pet {
         this.exp = exp;
         this.pm_status = pm_status;
         this.pokemon = pokemon;
+        this.skills = skills;
     }
 
     public int getCur_hp() {
@@ -224,5 +229,12 @@ public class Pet {
         this.pokemon = pokemon;
     }
 
+    public Vector<Skill> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(Vector<Skill> skills) {
+        this.skills = skills;
+    }
 
 }

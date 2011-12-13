@@ -45,6 +45,10 @@
             <forward name="success" path="/player/search_user.jsp"/>
             <forward name="failed" path="/index.jsp"/>
         </action>
+        <action path="/player/arrange_pet" type="com.pokemon.struts.ArrangePetAction">
+            <forward name="success" path="/player/arrange_pet.jsp"/>
+            <forward name="failed" path="/index.jsp"/>
+        </action>
         <action path="/Welcome" forward="/welcomeStruts.jsp"/>
     </action-mappings>
     
