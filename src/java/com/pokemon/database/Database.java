@@ -536,6 +536,22 @@ public class Database {
         return 3;
     }
 
+    public void terminateFriendship(int uid1, int uid2) {
+        try {
+            String sql = String.format("DELETE FROM friend WHERE (usera = '%d' AND userb = '%d') OR (usera = '%d' AND userb = '%d')", uid1, uid2, uid2, uid1);
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return;
+        }
+    }
+
     public Type getType(int tid) {
         Type result = null;
         String sql = String.format("SELECT typename FROM type WHERE typeid = '%d'", tid);
@@ -598,13 +614,24 @@ public class Database {
 
     public Pet getPet(int petid) {
         Pet result = null;
-        String sql = String.format("SELECT pmid, name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pet WHERE petid = '%d'", petid);
+        String sql = String.format("SELECT skill_a, curpp_a, maxpp_a, skill_b, curpp_b, maxpp_b, skill_c, curpp_c, maxpp_c, skill_d, curpp_d, maxpp_d pmid, name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pet WHERE petid = '%d'", petid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
-            if (rs.next())
-                result = new Pet(petid, rs.getString("name"), rs.getInt("max_hp"), rs.getInt("cur_hp"), rs.getInt("intimate"), rs.getInt("personal_hp"), rs.getInt("personal_attack"), rs.getInt("personal_defense"), rs.getInt("personal_sattack"), rs.getInt("personal_sdefense"), rs.getInt("personal_speed"), rs.getInt("effort_hp"), rs.getInt("effort_attack"), rs.getInt("effort_defense"), rs.getInt("effort_sattack"), rs.getInt("effort_sdefense"), rs.getInt("effort_speed"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("pm_status"), getPokemon(rs.getInt("pmid")));
+            if (rs.next()) {
+                Vector<Skill> skills = new Vector<Skill>();
+                for (int i = 0;i < Pet.MAX_SKILL_PERR_PET;++i)
+                {
+                    String skillStr = rs.getString("skill_" + (char)('a' + i));
+                    if (skillStr == null)
+                        continue;
+                    Integer skillid = Integer.parseInt(skillStr);
+                    Skill skill = getSkill(skillid);
+                    skills.add(skill);
+                }
+                result = new Pet(petid, rs.getString("name"), rs.getInt("max_hp"), rs.getInt("cur_hp"), rs.getInt("intimate"), rs.getInt("personal_hp"), rs.getInt("personal_attack"), rs.getInt("personal_defense"), rs.getInt("personal_sattack"), rs.getInt("personal_sdefense"), rs.getInt("personal_speed"), rs.getInt("effort_hp"), rs.getInt("effort_attack"), rs.getInt("effort_defense"), rs.getInt("effort_sattack"), rs.getInt("effort_sdefense"), rs.getInt("effort_speed"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("pm_status"), getPokemon(rs.getInt("pmid")), skills);
+            }
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors
