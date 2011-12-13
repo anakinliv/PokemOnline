@@ -21,13 +21,40 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+        <script type="text/javascript" src="../js/ext/ext-all.js"></script>
+        <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
         <script type="text/javascript">
-            function userItem(button, iid) {
-                //TODO
+            function useItem(button, iid, counttdid) {
+                var td = button.parentNode;
+                var tr = td.parentNode;
+                var counttd = document.getElementById(counttdid);
+                var table = tr.parentNode;
+                var lastCount = eval(counttd.innerHTML);
+                if (lastCount > 1)
+                    counttd.innerHTML = "" + (lastCount - 1);
+                else
+                    table.removeChild(tr);
+               Ext.Ajax.request({
+                   url: '../item_use_at_peace',
+                   params: {iid:iid},
+                   success: function(response, options) {
+                       document.getElementById("resultDiv").innerHTML = response.responseText;
+                   }
+               });
             }
 
             function dropItem(button, iid) {
-                //TODO
+                var td = button.parentNode;
+                var tr = td.parentNode;
+                var table = tr.parentNode;
+                table.removeChild(tr);
+                Ext.Ajax.request({
+                   url: '../drop_item',
+                   params: {iid:iid},
+                   success: function(response, options) {
+                       document.getElementById("resultDiv").innerHTML = response.responseText;
+                   }
+               });
             }
         </script>
         <title>Pokémon——管理背包</title>
@@ -54,15 +81,17 @@
                 <tr>
                     <td><%= items.elementAt(i).getName() %></td>
                     <td><%= items.elementAt(i).getDescription() %></td>
-                    <td><%= counts.elementAt(i).intValue() %></td>
-                    <td><button>使用</button></td>
-                    <td><button>丢弃</button></td>
+                    <td id=<%= "'item" + items.elementAt(i).getIid() + "'" %>><%= counts.elementAt(i).intValue() %></td>
+                    <td><button onclick=<%= "\"useItem(this, " + items.elementAt(i).getIid() + ", 'item" + items.elementAt(i).getIid() + "')\"" %>>使用</button></td>
+                    <td><button onclick=<%= "\"dropItem(this, " + items.elementAt(i).getIid() + ")\"" %>>丢弃</button></td>
                 </tr>
 <%
     }
     request.getSession().removeAttribute("bag_list");
 %>
             </table>
+            <div id="resultDiv">
+            </div>
         </div>
     </body>
 </html>

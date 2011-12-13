@@ -7,6 +7,11 @@
 <%@page import="com.pokemon.database.Database"%>
 <%@page contentType="json" pageEncoding="UTF-8"%>
 <%
+    Object obj = request.getSession().getAttribute("user");
+    if (obj == null) {
+        response.sendRedirect("../index.jsp");
+    }
+    User user = (User)obj;
     String username = request.getParameter("username");
     String pageStr = request.getParameter("page");
     Integer pageNumber;
@@ -18,12 +23,12 @@
         pageNumber = Integer.parseInt(pageStr);
     Database db = Database.getNewDatabase();
     SearchResult result = db.searchUser(username, pageNumber.intValue());
-    Database.databaseAfterUse(db);
 %>
 {
-"totalPages" : <%= result.totalPages %>,
-"pageFrom"   : <%= result.pageFrom %>,
-"users"      :
+"totalPages"   : <%= result.totalPages %>,
+"pageFrom"     : <%= result.pageFrom %>,
+"itemsPerPage" : <%= SearchResult.COUNT_PER_PAGE %>,
+"users"        :
  [<%
      int count = 0;
      for (int i = 0;i < result.result.size();++i) {
@@ -31,11 +36,13 @@
          User currentUser = (User)result.result.elementAt(i);
 %><%= count == 1 ? "" : "," %>
   {
+    "friendState"  : <%= db.getUserFriendState(user.getUid(), currentUser.getUid()) %>,
     "userid"       : <%= currentUser.getUid() %>,
     "username"     : "<%= currentUser.getUserName() %>",
     "itemsPerPage" : <%= SearchResult.COUNT_PER_PAGE %>
   }
 <%
     }
+    Database.databaseAfterUse(db);
 %> ]
 }

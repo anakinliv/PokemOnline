@@ -6,11 +6,11 @@
 package com.pokemon.servlet;
 
 import com.pokemon.database.Database;
+import com.pokemon.structure.Item;
 import com.pokemon.structure.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +19,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Sidney
  */
-@WebServlet(name="AcceptFriendRequestServlet", urlPatterns={"/accept_friend_request"})
-public class AcceptFriendRequestServlet extends HttpServlet {
+public class DropItemServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -31,25 +30,35 @@ public class AcceptFriendRequestServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        response.setContentType("text/plain;");
+        response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
             Object obj = request.getSession().getAttribute("user");
             if (obj == null) {
-                out.write(0);
+                out.write("用户未处于登陆状态");
                 return;
             }
+
+            String iidStr = request.getParameter("iid");
+            if (iidStr == null || iidStr == "") {
+                out.write("未选定物品");
+                out.close();
+                return;
+            }
+            Integer iid = Integer.parseInt(iidStr);
             User user = (User) obj;
-            String userbStr = request.getParameter("uid");
-            if (userbStr == null || userbStr == "") {
-                out.write(0);
+            Database db = Database.getNewDatabase();
+            int itemCount = db.getItemCount(user.getUid(), iid.intValue());
+            if (itemCount == 0) {
+                out.write("无此物品");
+                Database.databaseAfterUse(db);
+                out.close();
                 return;
             }
-            Database db = Database.getNewDatabase();
-            Integer userbId = Integer.parseInt(userbStr);
-            int result = db.acceptFriendRequest(user.getUid(), userbId.intValue());
+            db.dropItem(user.getUid(), iid.intValue());
+            Item item = db.getItem(iid.intValue());
             Database.databaseAfterUse(db);
-            out.write((char)(result+'0'));
+            out.write("丢弃了" + item.getName());
         } finally { 
             out.close();
         }

@@ -22,6 +22,19 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+        <script type="text/javascript" src="../js/ext/ext-all.js"></script>
+        <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
+        <script type="text/javascript">
+           function acceptRequest(button, id) {
+               button.innerHTML = "请求已接受";
+               button.setAttribute("onclick", "");
+               Ext.Ajax.request({
+                   url: '../accept_friend_request',
+                   params: {uid:id},
+                   success: function(response, options) {}
+               });
+            }
+        </script>
         <title>Pokémon——处理好友请求</title>
     </head>
 
@@ -43,7 +56,7 @@
 %>
                 <tr>
                     <td><%= friend_requests.elementAt(i).getUserName() %></td>
-                    <td><button>接受请求</button></td>
+                    <td><button onclick=<%= "acceptRequest(this," + friend_requests.elementAt(i).getUid() + ");" %>>接受请求</button></td>
                 </tr>
 <%
     }

@@ -332,6 +332,41 @@ public class Database {
         return result;
     }
 
+    public int getUserFriendState(int uid1, int uid2) {
+        int result = 0;
+        String sql = String.format("SELECT usera, userb FROM friend WHERE (usera = '%d' AND userb = '%d') OR (usera = '%d' AND userb = '%d')", uid1, uid2, uid2, uid1);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next()) {
+                result = 3;
+            } else {
+                sql = String.format("SELECT from_user, to_user FROM friend_request WHERE from_user = '%d' and to_user = '%d'", uid2, uid1);
+                stmt.execute(sql);
+                rs = stmt.getResultSet();
+                if (rs.next())
+                    result = 2;
+                else {
+                    sql = String.format("SELECT from_user, to_user FROM friend_request WHERE from_user = '%d' and to_user = '%d'", uid1, uid2);
+                    stmt.execute(sql);
+                    rs = stmt.getResultSet();
+                    if (rs.next())
+                        result = 1;
+                }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+
+        return result;
+    }
+
     public Bag getUserBag(int uid) {
         Bag result = new Bag();
         Vector<Integer> itemIds = new Vector<Integer>();
@@ -358,6 +393,72 @@ public class Database {
         }
 
         return result;
+    }
+
+    public int getItemCount(int uid, int iid) {
+        int result = 0;
+        String sql = String.format("SELECT count FROM bag WHERE userid = '%d' AND itemid = '%d'", uid, iid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next())
+                result = rs.getInt("count");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
+    public void dropItem(int uid, int iid) {
+        String sql = String.format("DELETE FROM bag WHERE userid = '%d'AND itemid = '%d'", uid, iid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void setItemCount(int uid, int iid, int count) {
+        boolean exist = false;
+        String sql = String.format("SELECT count FROM bag WHERE userid = '%d'AND itemid = '%d'", uid, iid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next())
+                exist = true;
+            if (exist) {
+                if (count > 0) {
+                    sql = String.format("UPDATE bag SET count = '%d' WHERE userid = '%d'AND itemid = '%d'", count, uid, iid);
+                    stmt.execute(sql);
+                    stmt.execute("COMMIT;");
+                } else {
+                    sql = String.format("DELETE FROM bag WHERE userid = '%d'AND itemid = '%d'", uid, iid);
+                    stmt.execute(sql);
+                    stmt.execute("COMMIT;");
+                }
+            } else {
+                addBag(uid, iid, count);
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
     }
 
     public SearchResult searchUser(String username, int page) {
@@ -390,6 +491,49 @@ public class Database {
         }
         
         return result;
+    }
+
+    public int sendFriendRequest(int uid1, int uid2) {
+        int lastState = getUserFriendState(uid1, uid2);
+        if (lastState == 1 || lastState == 3)
+            return lastState;
+        try {
+            if (lastState == 0) {
+                addFriendRequest(uid1, uid2);
+                return 1;
+            } else {
+                acceptFriendRequest(uid1, uid2);
+                return 3;
+            }
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return lastState;
+        }
+    }
+
+    public int acceptFriendRequest(int uid1, int uid2) {
+        int lastState = getUserFriendState(uid1, uid2);
+        if (lastState == 0 || lastState == 1)
+            return lastState;
+        try {
+            String sql = String.format("DELETE FROM friend_request WHERE (from_user = '%d' AND to_user = '%d') OR (from_user = '%d' AND to_user = '%d')", uid1, uid2, uid2, uid1);
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            if (lastState == 2)
+                addFriend(uid1, uid2);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return lastState;
+        }
+        return 3;
     }
 
     public User logUser(String username, String password) {

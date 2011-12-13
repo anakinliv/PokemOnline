@@ -10,7 +10,6 @@ import com.pokemon.structure.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Sidney
  */
-@WebServlet(name="AcceptFriendRequestServlet", urlPatterns={"/accept_friend_request"})
-public class AcceptFriendRequestServlet extends HttpServlet {
+public class SendFriendRequestServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -47,7 +45,7 @@ public class AcceptFriendRequestServlet extends HttpServlet {
             }
             Database db = Database.getNewDatabase();
             Integer userbId = Integer.parseInt(userbStr);
-            int result = db.acceptFriendRequest(user.getUid(), userbId.intValue());
+            int result = db.sendFriendRequest(user.getUid(), userbId.intValue());
             Database.databaseAfterUse(db);
             out.write((char)(result+'0'));
         } finally { 

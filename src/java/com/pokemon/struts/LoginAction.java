@@ -13,7 +13,6 @@ import org.apache.struts.action.ActionMapping;
 import com.pokemon.database.Database;
 import com.pokemon.structure.*;
 import javax.servlet.http.HttpSession;
-import java.nio.charset.*;
 
 /**
  *
@@ -44,9 +43,6 @@ public class LoginAction extends org.apache.struts.action.Action {
         }
 
         LoginForm formBean = (LoginForm)form;
-//Charset cs = Charset.forName("UTF-8");
-//CharsetDecoder cd = cs.newDecoder();
-//cd.replaceWith(formBean.getUsername());
 
         String username = formBean.getUsername();
         String password = formBean.getPassword();

@@ -21,6 +21,22 @@
         <servlet-name>AcceptFriendRequestServlet</servlet-name>
         <servlet-class>com.pokemon.servlet.AcceptFriendRequestServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SearchUserResultServlet</servlet-name>
+        <jsp-file>/SearchUserResultServlet.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>SendFriendRequestServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.SendFriendRequestServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ItemUseAtPeaceServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.ItemUseAtPeaceServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DropItemServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.DropItemServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -28,6 +44,22 @@
     <servlet-mapping>
         <servlet-name>AcceptFriendRequestServlet</servlet-name>
         <url-pattern>/accept_friend_request</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchUserResultServlet</servlet-name>
+        <url-pattern>/search_user</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SendFriendRequestServlet</servlet-name>
+        <url-pattern>/send_friend_request</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ItemUseAtPeaceServlet</servlet-name>
+        <url-pattern>/item_use_at_peace</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DropItemServlet</servlet-name>
+        <url-pattern>/drop_item</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
