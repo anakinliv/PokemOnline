@@ -30,6 +30,7 @@
         <link rel="stylesheet" type="text/css" href="../css/common.css"/>
         <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
+        <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
         <script type="text/javascript">
             Ext.require([
                 'Ext.grid.*',
@@ -42,6 +43,10 @@
                 fields: ['pid', 'nsme', 'type', 'exp']
             });
 
+            var activePetsGridStore;
+            var petsInBoxGridStore;;
+            var dropPetGridStore;
+
             Ext.onReady(function() {
                 Ext.QuickTips.init();
 
@@ -52,7 +57,7 @@
         if (activePets.elementAt(i) == null)
             continue;
  %>
-            <%= first ? "" : "," %>{<%= "pid: '" + activePets.elementAt(i).getPetid() + "'" %>, <%= "name: '" + activePets.elementAt(i).getName() + "'" %>, <%= "type: '" + activePets.elementAt(i).getPokemon().getName() + "'" %>, <%= "exp '" + activePets.elementAt(i).getExp() + "/" + activePets.elementAt(i).getPokemon().getLevelup_exp() + "'" %>}
+            <%= first ? "" : "," %>{<%= "pid: '" + activePets.elementAt(i).getPetid() + "'" %>, <%= "name: '" + activePets.elementAt(i).getName() + "'" %>, <%= "type: '" + activePets.elementAt(i).getPokemon().getName() + "'" %>, <%= "exp: '" + activePets.elementAt(i).getExp() + "/" + activePets.elementAt(i).getPokemon().getLevelup_exp() + "'" %>}
 <%
         first = false;
     }
@@ -74,15 +79,15 @@
             ];
 
         // create the data store
-        var activePetsGridStore = Ext.create('Ext.data.Store', {
+        activePetsGridStore = Ext.create('Ext.data.Store', {
             model: 'PetDataObject',
             data: activePets
         });
-        var petsInBoxGridStore = Ext.create('Ext.data.Store', {
+        petsInBoxGridStore = Ext.create('Ext.data.Store', {
             model: 'PetDataObject',
             data: petsInBox
         });
-        var dropPetGridStore = Ext.create('Ext.data.Store', {
+        dropPetGridStore = Ext.create('Ext.data.Store', {
             model: 'PetDataObject'
         });
             // Column Model shortcut array
@@ -96,17 +101,10 @@
     var activePetsGrid = Ext.create('Ext.grid.Panel', {
         multiSelect: true,
         viewConfig: {
-            plugins: [
+            plugins:
                 {ptype: 'gridviewdragdrop',
-                dragGroup: 'activePetsGridDDGroup',
-                dropGroup: 'activePetsGridDDGroup'},
-                {ptype: 'gridviewdragdrop',
-                dragGroup: 'activePetsGridDDGroup',
-                dropGroup: 'petsInBoxGridDDGroup'},
-                {ptype: 'gridviewdragdrop',
-                dragGroup: 'dropPetsGridDDGroup',
-                dropGroup: 'petsInBoxGridDDGroup'}
-            ]
+                dragGroup: 'GridDDGroup',
+                dropGroup: 'GridDDGroup'}
         },
         store            : activePetsGridStore,
         columns          : columns,
@@ -117,14 +115,10 @@
     // create the destination Grid
     var petsInBoxGrid = Ext.create('Ext.grid.Panel', {
         viewConfig: {
-            plugins: [
+            plugins:
                 {ptype: 'gridviewdragdrop',
-                dragGroup: 'petsInBoxGridDDGroup',
-                dropGroup: 'activePetsGridDDGroup'},
-                {ptype: 'gridviewdragdrop',
-                dragGroup: 'petsInBoxGridDDGroup',
-                dropGroup: 'dropPetGridDDGroup'}
-            ]
+                dragGroup: 'GridDDGroup',
+                dropGroup: 'GridDDGroup'}
         },
         store            : petsInBoxGridStore,
         columns          : columns,
@@ -135,14 +129,10 @@
     // create the destination Grid
     var dropPetBoxGrid = Ext.create('Ext.grid.Panel', {
         viewConfig: {
-            plugins: [
+            plugins:
                 {ptype: 'gridviewdragdrop',
-                dragGroup: 'dropPetGridDDGroup',
-                dropGroup: 'activePetsGridDDGroup'},
-                {ptype: 'gridviewdragdrop',
-                dragGroup: 'dropPetGridDDGroup',
-                dropGroup: 'petsInBoxGridDDGroup'}
-            ]
+                dragGroup: 'GridDDGroup',
+                dropGroup: 'GridDDGroup'}
         },
         store            : dropPetGridStore,
         columns          : columns,
@@ -166,6 +156,46 @@
         });
     });
 
+    function confirm() {
+        var formStr = "<form id='DoArrangePetForm' name='DoArrangePetForm' action='../do_arrange_pet.do' method='post'>";
+        var currentArray = activePetsGridStore.data.items;
+        if (currentArray.length == 0) {
+             Ext.Msg.alert("出错啦", "不随身携带任何宠物是不被允许的");
+             return;
+        }
+        if (currentArray.length > <%= PetsOfAUser.MAX_ACTIVE_PET_COUNT %>) {
+             Ext.Msg.alert("出错啦", "随身携带超过" + <%= PetsOfAUser.MAX_ACTIVE_PET_COUNT %> + "个宠物是不被允许的");
+             return;
+        }
+        for (i = 0; i < currentArray.length;++i) {
+            formStr = formStr + "<input type='text' name='active' value='" + currentArray[i].data.pid + "'/>";
+        }
+        currentArray = petsInBoxGridStore.data.items;
+        for (i = 0; i < currentArray.length;++i) {
+            formStr = formStr + "<input type='text' name='box' value='" + currentArray[i].data.pid + "'/>";
+        }
+        currentArray = dropPetGridStore.data.items;
+        if (currentArray.length > 0) {
+            Ext.Msg.confirm("请注意", "检测到有要丢弃的宠物，丢弃宠物时请慎重，一旦丢弃，不可找回。确认这样管理宠物？", function(btn, text){
+                if (btn == 'yes') {
+                    for (i = 0; i < currentArray.length;++i) {
+                        formStr = formStr + "<input type='text' name='drop' value='" + currentArray[i].data.pid + "'/>";
+                    }
+                    formStr = formStr + "</form>";
+                    document.getElementById("hiddenDiv").innerHTML = formStr;
+                    document.forms["ArrangePetForm"].submit();
+                }
+            });
+        } else {
+            for (i = 0; i < currentArray.length;++i) {
+                formStr = formStr + "<input type='text' name='drop' value='" + currentArray[i].data.pid + "'/>";
+            }
+            formStr = formStr + "</form>";
+            document.getElementById("hiddenDiv").innerHTML = formStr;
+            document.forms["DoArrangePetForm"].submit();
+        }
+    }
+
         </script>
         <title>Pokémon——管理宠物</title>
     </head>
@@ -177,6 +207,9 @@
         <div id="main">
             <div id="pet_list">
             </div>
+            <button onclick="confirm();">确定</button>
+        </div>
+        <div id="hiddenDiv" style="display:none">
         </div>
     </body>
 </html>

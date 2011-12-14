@@ -27,7 +27,7 @@
                 <label for="username">用户名</label>
                 <input type="text" id="username" name="username" />
                 <label for="password">密码</label>
-                <input type="text" id="password" name="password" />
+                <input type="password" id="password" name="password" />
                 <button type="submit">登陆</button>
             </html:form>
                 <a href="regist.html">注册</a>

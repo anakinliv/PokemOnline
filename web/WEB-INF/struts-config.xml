@@ -7,6 +7,7 @@
 
 <struts-config>
     <form-beans>
+        <form-bean name="DoArrangePetForm" type="com.pokemon.struts.DoArrangePetForm"/>
         <form-bean name="LoginForm" type="com.pokemon.struts.LoginForm"/>
     
     </form-beans>
@@ -31,23 +32,27 @@
         </action>
         <action path="/player/friend_request" type="com.pokemon.struts.FriendRequestAction">
             <forward name="success" path="/player/friend_request.jsp"/>
-            <forward name="failed" path="/index.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/player/friend_list" type="com.pokemon.struts.FriendListAction">
             <forward name="success" path="/player/friend_list.jsp"/>
-            <forward name="failed" path="/index.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/player/bag_list" type="com.pokemon.struts.BagListAction">
             <forward name="success" path="/player/bag_list.jsp"/>
-            <forward name="failed" path="/index.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/player/search_user" type="com.pokemon.struts.SearchUserInitAction">
             <forward name="success" path="/player/search_user.jsp"/>
-            <forward name="failed" path="/index.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/player/arrange_pet" type="com.pokemon.struts.ArrangePetAction">
             <forward name="success" path="/player/arrange_pet.jsp"/>
-            <forward name="failed" path="/index.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action name="DoArrangePetForm" path="/do_arrange_pet" scope="request" type="com.pokemon.struts.DoArrangePetAction" validate="false">
+            <forward name="success" path="/player/arrange_pet.do" redirect="true"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/Welcome" forward="/welcomeStruts.jsp"/>
     </action-mappings>

@@ -679,6 +679,51 @@ public class Database {
         return result;
     }
 
+    public void setActivePet(int uid, int pos, int pid) {
+        String sql = String.format("UPDATE user SET pet_%d = %d WHERE userid = %d", pos, pid, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void clearActivePet(int uid, int pos) {
+        String sql = String.format("UPDATE user SET pet_%d = null WHERE userid = %d", pos, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void clearBox(int uid) {
+        String sql = String.format("DELETE FROM box WHERE userid = %d", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
     public User logUser(String username, String password) {
         String sql = String.format("SELECT userid, username, type FROM user where username = '%s' and password = '%s'", username, password);
         User user = null;
