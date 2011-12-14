@@ -21,10 +21,168 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+        <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
         <script type="text/javascript">
-            var needRefresh = false;
+            Ext.require([
+                'Ext.grid.*',
+                'Ext.data.*',
+                'Ext.util.*',
+                'Ext.Action'
+            ]);
+
+            var store;
+            var pages=[];
+            var displayPanel;
+            var grid;
+
+            Ext.onReady(function() {
+                Ext.QuickTips.init();
+
+            var myData = [];
+
+            // create the data store
+            store = Ext.create('Ext.data.ArrayStore', {
+                fields: [
+                   {name: 'friendState', type: 'int'},
+                   {name: 'friendStateStr'},
+                   {name: 'userid', type: 'int'},
+                   {name: 'username'}
+                ],
+                data: myData
+            });
+
+            var sendRequestAction = Ext.create('Ext.Action', {
+                text: '发送好友申请',
+                disabled: true,
+                handler: function(widget, event) {
+                    var rec = grid.getSelectionModel().getSelection()[0];
+                    if (rec) {
+                        Ext.Ajax.request({
+                            url: '../send_friend_request',
+                            params: {
+                                uid:rec.data.userid
+                            },
+                            success: function(response, options) {
+                                var v = eval(response.responseText);
+                                decorateButton(button, id, v);
+                            }
+                        });
+                        rec.data.friendState = 1;
+                        rec.data.friendStateStr = "已发送好友申请";
+                        rec.commit();
+                    }
+                }
+            });
+
+            var acceptRequestAction = Ext.create('Ext.Action', {
+                text: '接受好友申请',
+                disabled: true,
+                handler: function(widget, event) {
+                    var rec = grid.getSelectionModel().getSelection()[0];
+                    if (rec) {
+                        Ext.Ajax.request({
+                            url: '../accept_friend_request',
+                            params: {
+                                uid:rec.data.userid
+                            },
+                            success: function(response, options) {
+                                var v = eval(response.responseText);
+                                decorateButton(button, id, v);
+                            }
+                        });
+                        rec.data.friendState = 3;
+                        rec.data.friendStateStr = "已为好友";
+                        rec.commit();
+                    }
+                }
+            });
+
+            var contextMenu = Ext.create('Ext.menu.Menu', {
+                items: [sendRequestAction, acceptRequestAction]
+            });
+
+            grid = Ext.create('Ext.grid.Panel', {
+                store: store,
+                columnLines: true,
+                columns: [
+                    {
+                        text     : '用户名',
+                        flex     : 1,
+                        sortable : true,
+                        dataIndex: 'username'
+                    },
+                    {
+                        text     : '好友状态',
+                        flex     : 1,
+                        sortable : true,
+                        dataIndex: 'friendStateStr'
+                    }
+                ],
+                dockedItems: [{
+                    xtype: 'toolbar',
+                    items: [sendRequestAction, acceptRequestAction]
+                }],
+                viewConfig: {
+                    stripeRows: true,
+                    listeners: {
+                        itemcontextmenu: function(view, rec, node, index, e) {
+                            e.stopEvent();
+                            contextMenu.showAt(e.getXY());
+                            return false;
+                        }
+                    }
+                },
+                height: 350,
+                width: 600,
+                title: '搜索结果',
+                stateful: false
+            });
+            grid.getSelectionModel().on({
+                selectionchange: function(sm, selections) {
+                    if (selections.length) {
+                        var rec = selections[0];
+                        switch (rec.data.friendState){
+                            case 3:
+                            case 1:
+                                sendRequestAction.disable();
+                                acceptRequestAction.disable();
+                                break;
+                            case 2:
+                                sendRequestAction.disable();
+                                acceptRequestAction.enable();
+                                break;
+                            case 0:
+                                sendRequestAction.enable();
+                                acceptRequestAction.disable();
+                                break;
+                        }
+                    }
+                    else {
+                        sendRequestAction.disable();
+                        acceptRequestAction.disable();
+                    }
+                }
+            });
+            displayPanel = Ext.create('Ext.Panel', {
+                width        : 650,
+                height       : 450,
+                layout       : {
+                    type: 'hbox',
+                    align: 'stretch',
+                    padding: 5
+                },
+                renderTo     : 'panel',
+                defaults     : { flex : 1 }, //auto stretch
+                items        : [grid],
+                dockedItems  : {
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: pages
+                }
+            });
+        });
             var currentPage = 1;
             var currentSearchString = "player1";
             var searchResult;
@@ -39,32 +197,17 @@
                             searchResult = eval("(" + response.responseText + ')');
                             needRefresh = false;
                             if (searchResult.totalPages > 0)
-                                moveToPage(currentPage);
+                                showResult();
                             else
                                 clearResult();
-                          needRefresh = false;
                         }
                     });
             }
 
             function moveToPage(pageNumber) {
-                currentPage = pageNumber;
-                if ((!needRefresh) && currentPage >= searchResult.pageFrom && currentPage <= searchResult.pageFrom + (searchResult.users.length + searchResult.itemsPerPage - 1) / searchResult.itemsPerPage - 1)
-                {
-                    showResult();
-                }
-                else
-                {
-                    var from;
-                    if (currentPage < searchResult.pageFrom)
-                        from = currentPage - 2;
-                    else
-                        from = currentPage;
-                    if (from <= 0)
-                        from = 1;
-                    if (from > searchResult.totalPages)
-                        from = searchResult.totalPages;
-                    sendSearchRequest(from);
+                if (currentPage != pageNumber) {
+                    currentPage = pageNumber;
+                    sendSearchRequest(pageNumber);
                 }
             }
 
@@ -74,92 +217,44 @@
                 sendSearchRequest(currentPage);
             }
 
-            function decorateButton(button, id, type) {
-                switch (type)
-                {
-                    case 3:
-                        button.innerHTML = "已为好友";
-                        button.uid = id;
-                        button.setAttribute("onclick", "");
-                        break;
-                    case 2:
-                        button.innerHTML = "接受请求";
-                        button.uid = id;
-                        button.setAttribute("onclick", "addFriend(this, "+ id + ");");
-                        break;
-                    case 1:
-                        button.innerHTML = "请求已发送";
-                        button.uid = id;
-                        button.setAttribute("onclick", "");
-                        break;
-                    case 0:
-                        button.innerHTML = "加为好友";
-                        button.uid = id;
-                        button.setAttribute("onclick", "addFriend(this, "+ id + ");");
-                        break;
-                    }
-            }
-
-            function addFriend(button, id) {
-                decorateButton(button, id, 1);
-
-                Ext.Ajax.request({
-                    url: '../send_friend_request',
-                    params: {
-                        uid:id
-                    },
-                    success: function(response, options) {
-                        var v = eval(response.responseText);
-                        decorateButton(button, id, v);
-                    }
-                });
-
-                needRefresh = true;
-            }
-
             function clearResult() {
-                var userListTable = document.getElementById("user_list");
-                while (userListTable.hasChildNodes())
-                    userListTable.removeChild(userListTable.firstChild);
-                var pageDiv = document.getElementById("page_div");
-                while (pageDiv.hasChildNodes())
-                    pageDiv.removeChild(pageDiv.firstChild);
+                store.loadData([]);
+                displayPanel.removeDocked(Ext.getCmp('docked'), true);
+                displayPanel.doComponentLayout();
             }
 
             function showResult() {
                 clearResult();
-                var userListTable = document.getElementById("user_list");
-                var indexFrom = (currentPage - searchResult.pageFrom) * searchResult.itemsPerPage;
-                if (indexFrom < 0)
-                    indexFrom = 0;
-                var indexTo = indexFrom + searchResult.itemsPerPage - 1;
-                if (indexTo >= searchResult.users.length)
-                    indexTo = searchResult.users.length - 1;
-                for (i = indexFrom;i <= indexTo;++i) {
-                    var tr = document.createElement("tr");
-                    var tdName = document.createElement("td");
-                    tdName.innerHTML = searchResult.users[i].username;
-                    var tdButton = document.createElement("td");
-                    var button = document.createElement("button");
-                    decorateButton(button, searchResult.users[i].userid, searchResult.users[i].friendState);
-                    tdButton.appendChild(button);
-                    tr.appendChild(tdName);
-                    tr.appendChild(tdButton);
-                    userListTable.appendChild(tr);
-                }
+                store.loadData(searchResult.users);
 
-                var pageDiv = document.getElementById("page_div");
+                pages=[];
                 for (i = 1;i <= searchResult.totalPages;++i) {
-                    var label = document.createElement("label");
-                    label.innerHTML = "" + i;
-                    if (i != currentPage) {
-                        label.onclick = "moveToPage(" + i + ");";
-                        label.className = "notCurPage";
-                    } else {
-                        label.className = "curPage";
-                    }
-                    pageDiv.appendChild(label);
+                    var pageStr = "" + i;
+                    pages.push(
+                        {text: pageStr,
+                            handler: function(){
+                        moveToPage(eval(this.text));
+                        }});
                 }
+            displayPanel.addDocked({
+                    id: "docked",
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: pages
+                });
+            displayPanel.doComponentLayout();
+//                var pageDiv = document.getElementById("page_div");
+//                for (i = 1;i <= searchResult.totalPages;++i) {
+//                    var label = document.createElement("label");
+//                    label.innerHTML = "" + i;
+//                    if (i != currentPage) {
+//                        label.onclick = "moveToPage(" + i + ");";
+//                        label.className = "notCurPage";
+//                    } else {
+//                        label.className = "curPage";
+//                    }
+//                    pageDiv.appendChild(label);
+//                }
             }
         </script>
         <title>Pokémon——查找用户</title>
@@ -176,9 +271,7 @@
                 </tr>
             </table>
 
-            <table id="user_list">
-            </table>
-            <div id="page_div">
+            <div id="panel">
             </div>
         </div>
     </body>

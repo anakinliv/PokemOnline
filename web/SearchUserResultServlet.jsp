@@ -25,21 +25,36 @@
     SearchResult result = db.searchUser(username, pageNumber.intValue());
 %>
 {
-"totalPages"   : <%= result.totalPages %>,
-"pageFrom"     : <%= result.pageFrom %>,
-"itemsPerPage" : <%= SearchResult.COUNT_PER_PAGE %>,
-"users"        :
+"totalPages" : <%= result.totalPages %>,
+"page"       : <%= result.pageFrom %>,
+"users"      :
  [<%
      int count = 0;
      for (int i = 0;i < result.result.size();++i) {
          ++count;
          User currentUser = (User)result.result.elementAt(i);
+         int state = db.getUserFriendState(user.getUid(), currentUser.getUid());
+         String stateStr = "";
+         switch(state) {
+             case 3:
+                 stateStr = "已为好友";
+                 break;
+             case 2:
+                 stateStr = "收到来自对方的好友申请";
+                 break;
+             case 1:
+                 stateStr = "已发送好友申请";
+                 break;
+             case 0:
+                 stateStr = "无";
+                 break;
+         }
 %><%= count == 1 ? "" : "," %>
   {
-    "friendState"  : <%= db.getUserFriendState(user.getUid(), currentUser.getUid()) %>,
-    "userid"       : <%= currentUser.getUid() %>,
-    "username"     : "<%= currentUser.getUserName() %>",
-    "itemsPerPage" : <%= SearchResult.COUNT_PER_PAGE %>
+    "friendState"    : <%= state %>,
+    "friendStateStr" : '<%= stateStr %>',
+    "userid"         : <%= currentUser.getUid() %>,
+    "username"       : "<%= currentUser.getUserName() %>"
   }
 <%
     }

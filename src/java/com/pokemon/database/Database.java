@@ -463,7 +463,6 @@ public class Database {
 
     public SearchResult searchUser(String username, int page) {
         SearchResult result = new SearchResult();
-        final int PAGE_COUNT_PER_SEARCH = 3;
         String sql = String.format("SELECT userid, username, type FROM user WHERE username like '%s'", username);
         try {
             Statement stmt = connection.createStatement();
@@ -474,7 +473,7 @@ public class Database {
             {
                 ++count;
                 if (count > SearchResult.COUNT_PER_PAGE * (page - 1) &&
-                    count <= SearchResult.COUNT_PER_PAGE * (count + PAGE_COUNT_PER_SEARCH - 1)) {
+                    count <= SearchResult.COUNT_PER_PAGE * page) {
                     User currentUser = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"));
                     result.result.add(currentUser);
                 }
