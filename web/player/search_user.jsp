@@ -243,18 +243,6 @@
                     items: pages
                 });
             displayPanel.doComponentLayout();
-//                var pageDiv = document.getElementById("page_div");
-//                for (i = 1;i <= searchResult.totalPages;++i) {
-//                    var label = document.createElement("label");
-//                    label.innerHTML = "" + i;
-//                    if (i != currentPage) {
-//                        label.onclick = "moveToPage(" + i + ");";
-//                        label.className = "notCurPage";
-//                    } else {
-//                        label.className = "curPage";
-//                    }
-//                    pageDiv.appendChild(label);
-//                }
             }
         </script>
         <title>Pokémon——查找用户</title>

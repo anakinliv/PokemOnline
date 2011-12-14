@@ -21,7 +21,7 @@
                     <td><a href="trade_pet.jsp">交易宠物</a></td>
                     <td><a href="get_pet.jsp">获取宠物</a></td>
                     <td><a href="adventure.jsp">进行冒险</a></td>
-                    <td><a href="arrange_pet.jsp">管理宠物</a></td>
+                    <td><a href="arrange_pet.do">管理宠物</a></td>
                     <td><a href="friend_request.do">处理好友请求</a></td>
                     <td><a href="friend_list.do">好友列表</a></td>
                     <td><a href="search_user.do">查找用户</a></td>

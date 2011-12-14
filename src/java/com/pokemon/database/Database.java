@@ -613,7 +613,7 @@ public class Database {
 
     public Pet getPet(int petid) {
         Pet result = null;
-        String sql = String.format("SELECT skill_a, curpp_a, maxpp_a, skill_b, curpp_b, maxpp_b, skill_c, curpp_c, maxpp_c, skill_d, curpp_d, maxpp_d pmid, name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pet WHERE petid = '%d'", petid);
+        String sql = String.format("SELECT skill_a, curpp_a, maxpp_a, skill_b, curpp_b, maxpp_b, skill_c, curpp_c, maxpp_c, skill_d, curpp_d, maxpp_d, pmid, name, max_hp, cur_hp, intimate, personal_hp, personal_attack, personal_defense, personal_sattack, personal_sdefense, personal_speed, effort_hp, effort_attack, effort_defense, effort_sattack, effort_sdefense, effort_speed, level, exp, pm_status FROM pet WHERE petid = '%d'", petid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
