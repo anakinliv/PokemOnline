@@ -5,6 +5,8 @@
 
 package com.pokemon.database;
 
+import com.pokemon.structure.Pet;
+import com.pokemon.structure.PetsOfAUser;
 import java.sql.SQLException;
 
 /**
@@ -76,7 +78,7 @@ public class CreateTestData {
     private static void createPokemons() throws SQLException {
         Database d = new Database();
         for (int i = 0; i < POKEMON_COUNT;++i)
-            d.addPokemon(i % TYPE_COUNT + 1, String.format("Pokemon%d", i), i + 1, i + 1, i + 1, i + 1, i + 1, i + 1, i + 1, i + 1);
+            d.addPokemon(i % TYPE_COUNT + 1, (i + 1) % TYPE_COUNT + 1, String.format("Pokemon%d", i), i + 1, i + 1, i + 1, i + 1, i + 1, i + 1, i + 1, i + 1, i + 1);
         d.close();
     }
 
@@ -187,10 +189,10 @@ public class CreateTestData {
                     createUsers();
                     break;
                 case 5:
-//                    createFriendRequests();
-//                    createFriends();
-//                    createChats();
-//                    createBoxs();
+                    createFriendRequests();
+                    createFriends();
+                    createChats();
+                    createBoxs();
                     createBags();
                     break;
             }
@@ -206,6 +208,12 @@ public class CreateTestData {
 //        createLevelData(2);
 //        createLevelData(3);
 //        createLevelData(4);
-        createLevelData(5);
+//        createLevelData(5);
+        Database d = new Database();
+        Pet pet = d.getPet(1);
+        pet.setMax_hp(123);
+        d.updatePet(pet);
+//        PetsOfAUser tmp = d.getPetsOfAUser(1);
+        d.close();
     }
 }

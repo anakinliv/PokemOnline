@@ -279,4 +279,12 @@ public class Pet {
             }
     }
 
+    public Type getType1() {
+        return pokemon.getType1();
+    }
+    
+    public Type getType2() {
+        return pokemon.getType2();
+    }
+
 }

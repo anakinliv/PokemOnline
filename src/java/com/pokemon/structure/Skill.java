@@ -5,6 +5,8 @@
 
 package com.pokemon.structure;
 
+import java.util.Vector;
+
 /**
  *
  * @author Sidney
@@ -14,12 +16,14 @@ public class Skill {
     String name;
     String description;
     Type type;
+    Vector<Effect> effects;
 
-    public Skill(int sid, String name, String description, Type type) {
+    public Skill(int sid, String name, String description, Type type, Vector<Effect> effects) {
         this.sid = sid;
         this.name = name;
         this.description = description;
         this.type = type;
+        this.effects = effects;
     }
 
     public String getDescription() {
@@ -52,6 +56,14 @@ public class Skill {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public Vector<Effect> getEffects() {
+        return effects;
+    }
+
+    public void setEffects(Vector<Effect> effects) {
+        this.effects = effects;
     }
 
 

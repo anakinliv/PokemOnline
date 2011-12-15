@@ -36,6 +36,12 @@ public class Effect {
       this.v = value;
   }
 
+  public Effect(Effect another) {
+      this.id = another.id;
+      this.targetInDataBase = another.targetInDataBase;
+      this.v = another.v;
+  }
+
   public boolean targetIsSelf() {
       return (targetInDataBase & SELF) == SELF;
   }
@@ -46,5 +52,9 @@ public class Effect {
 
   public int value() {
       return this.v;
+  }
+
+  public void setValue(int v) {
+      this.v = v;
   }
 }

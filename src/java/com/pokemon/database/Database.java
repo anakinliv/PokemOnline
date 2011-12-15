@@ -110,13 +110,12 @@ public class Database {
         stmt.close();
     }
 
-    public void addPokemon(int typeid1, int typeid2, String name, int hp, int attack, int defense, int sattack, int sdefense, int speed, int catchrate, int levelup_exp) throws SQLException {
-
+    public void addPokemon(int typeid1, int typeid2, String name, int hp, int attack, int defense, int sattack, int sdefense, int speed, int catchrate, int levelup_exp, int defeat_exp) throws SQLException {
         String sql;
         if (typeid2 == -1)
-            sql = String.format("INSERT INTO pokemon(typeid1, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp) VALUES('%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')", typeid1, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp);
+            sql = String.format("INSERT INTO pokemon(typeid1, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp, defeat_exp) VALUES('%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', 'd')", typeid1, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp, defeat_exp);
         else
-            sql = String.format("INSERT INTO pokemon(typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp) VALUES('%d', '%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')", typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp);
+            sql = String.format("INSERT INTO pokemon(typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp, defeat_exp) VALUES('%d', '%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')", typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp, defeat_exp);
         Statement stmt = connection.createStatement();
         stmt.execute(sql);
         stmt.execute("COMMIT;");
@@ -576,6 +575,26 @@ public class Database {
         return result;
     }
 
+    public Vector<Effect> getSkillEffects(int sid) {
+        Vector<Effect> result = new Vector<Effect>();
+        String sql = String.format("SELECT effectid FROM skill_effect WHERE skillid = '%d'", sid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            while (rs.next())
+                result.add(getEffect(rs.getInt("effectid")));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
     public Skill getSkill(int sid) {
         Skill result = null;
         String sql = String.format("SELECT typeid, skillname, description FROM skill WHERE skillid = '%d'", sid);
@@ -584,7 +603,7 @@ public class Database {
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
-                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")));
+                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")), getSkillEffects(sid));
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors
@@ -743,6 +762,34 @@ public class Database {
 
     public void setPetSkillCurpp(int pid, int skill, int curpp) {
         String sql = String.format("UPDATE pet SET curpp_%c = %d WHERE petid = %d", (char)('a' + skill), curpp, pid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void updatePet(Pet pet) {
+        if (pet.getPetid() < 0)
+            return;
+        String skillStr = "";
+        Vector<Skill> skills = pet.getSkills();
+        Vector<Integer> maxpps = pet.getMaxpps();
+        Vector<Integer> curpps = pet.getCurpps();
+        for (int i = 0;i < Pet.MAX_SKILL_PERR_PET;++i) {
+            char abcd = (char) ('a' + i);
+            if (i < skills.size() && skills.elementAt(i) != null)
+                skillStr += String.format(" , skill_%c = %d , curpp_%c = %d , maxpp_%c = %d", abcd, abcd , abcd, skills.elementAt(i).getSid(), curpps.elementAt(i).intValue(), maxpps.elementAt(i).intValue());
+            else
+                skillStr += String.format(" , skill_%c = null , curpp_%c = null , maxpp_%c = null", abcd, abcd , abcd);
+        }
+        String sql = String.format("UPDATE pet SET pmid = %d , name = '%s' %s , max_hp = %d , cur_hp = %d , intimate = %d , personal_hp = %d , personal_attack = %d , personal_defense = %d , personal_sattack = %d , personal_sdefense = %d , personal_speed = %d , effort_hp = %d , effort_attack = %d , effort_defense = %d , effort_sattack = %d , effort_sdefense = %d , effort_speed = %d , level = %d , exp = %d , pm_status = %d WHERE petid = %d", pet.getPokemon().getPmid(), pet.getName(), skillStr, pet.getMax_hp(), pet.getCur_hp(), pet.getIntimate(), pet.getPersonal_hp(), pet.getPersonal_attack(), pet.getPersonal_defense(), pet.getPersonal_sattack(), pet.getPersonal_sdefense(), pet.getPersonal_speed(), pet.getEffort_hp(), pet.getEffort_attack(), pet.getEffort_defense(), pet.getEffort_sattack(), pet.getEffort_sdefense(), pet.getEffort_speed(), pet.getLevel(), pet.getExp(), pet.getPm_status(), pet.getPetid());
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);

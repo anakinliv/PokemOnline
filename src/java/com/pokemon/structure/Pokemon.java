@@ -38,6 +38,14 @@ public class Pokemon {
         this.type2 = type2;
     }
 
+    public int getPmid() {
+        return pmid;
+    }
+
+    public void setPmid(int pmid) {
+        this.pmid = pmid;
+    }
+
     public int getAttack() {
         return attack;
     }

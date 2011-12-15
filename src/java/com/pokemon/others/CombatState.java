@@ -16,6 +16,7 @@ import java.util.Vector;
  */
 public class CombatState {
     Vector<Pet> petsOfUser;
+    //Vector<CombatAdditionalStateOfAPet> aditionalState;
     int currentPetIndex;
     int uid;
     Bag bag;
