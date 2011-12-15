@@ -20,9 +20,10 @@ public class Pokemon {
     int speed;
     int catchrate;
     int levelup_exp;
-    Type type;
+    Type type1;
+    Type type2;
 
-    public Pokemon(int pmid, String name, int hp, int attack, int defense, int sattack, int sdefense, int speed, int catchrate, int levelup_exp, Type type) {
+    public Pokemon(int pmid, String name, int hp, int attack, int defense, int sattack, int sdefense, int speed, int catchrate, int levelup_exp, Type type1, Type type2) {
         this.pmid = pmid;
         this.name = name;
         this.hp = hp;
@@ -33,7 +34,8 @@ public class Pokemon {
         this.speed = speed;
         this.catchrate = catchrate;
         this.levelup_exp = levelup_exp;
-        this.type = type;
+        this.type1 = type1;
+        this.type2 = type2;
     }
 
     public int getAttack() {
@@ -108,12 +110,20 @@ public class Pokemon {
         this.speed = speed;
     }
 
-    public Type getType() {
-        return type;
+    public Type getType1() {
+        return type1;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setType1(Type type1) {
+        this.type1 = type1;
+    }
+
+    public Type getType2() {
+        return type2;
+    }
+
+    public void setType2(Type type2) {
+        this.type2 = type2;
     }
     
 }

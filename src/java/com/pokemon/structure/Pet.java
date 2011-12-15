@@ -35,8 +35,10 @@ public class Pet {
     int pm_status;
     Pokemon pokemon;
     Vector<Skill> skills;
+    Vector<Integer> maxpps;
+    Vector<Integer> curpps;
 
-    public Pet(int petid, String name, int max_hp, int cur_hp, int intimate, int personal_hp, int personal_attack, int personal_defense, int personal_sattack, int personal_sdefense, int personal_speed, int effort_hp, int effort_attack, int effort_defense, int effort_sattack, int effort_sdefense, int effort_speed, int level, int exp, int pm_status, Pokemon pokemon, Vector<Skill> skills) {
+    public Pet(int petid, String name, int max_hp, int cur_hp, int intimate, int personal_hp, int personal_attack, int personal_defense, int personal_sattack, int personal_sdefense, int personal_speed, int effort_hp, int effort_attack, int effort_defense, int effort_sattack, int effort_sdefense, int effort_speed, int level, int exp, int pm_status, Pokemon pokemon, Vector<Skill> skills, Vector<Integer> maxpps, Vector<Integer> curpps) {
         this.petid = petid;
         this.name = name;
         this.max_hp = max_hp;
@@ -59,6 +61,8 @@ public class Pet {
         this.pm_status = pm_status;
         this.pokemon = pokemon;
         this.skills = skills;
+        this.maxpps = maxpps;
+        this.curpps = curpps;
     }
 
     public int getCur_hp() {
@@ -235,6 +239,44 @@ public class Pet {
 
     public void setSkills(Vector<Skill> skills) {
         this.skills = skills;
+    }
+
+    public Vector<Integer> getCurpps() {
+        return curpps;
+    }
+
+    public void setCurpps(Vector<Integer> curpps) {
+        this.curpps = curpps;
+    }
+
+    public Vector<Integer> getMaxpps() {
+        return maxpps;
+    }
+
+    public void setMaxpps(Vector<Integer> maxpps) {
+        this.maxpps = maxpps;
+    }
+
+    public int getSkillMaxpp(int sid) {
+        for (int i = 0;i < skills.size();++i)
+            if (skills.elementAt(i) != null && skills.elementAt(i).getSid() == sid)
+                return maxpps.elementAt(i).intValue();
+        return 0;
+    }
+
+    public int getSkillCurpp(int sid) {
+        for (int i = 0;i < skills.size();++i)
+            if (skills.elementAt(i) != null && skills.elementAt(i).getSid() == sid)
+                return curpps.elementAt(i).intValue();
+        return 0;
+    }
+
+    public void setSkillCurpp(int sid, int count) {
+        for (int i = 0;i < skills.size();++i)
+            if (skills.elementAt(i) != null && skills.elementAt(i).getSid() == sid) {
+                curpps.set(i, count);
+                return;
+            }
     }
 
 }

@@ -110,8 +110,13 @@ public class Database {
         stmt.close();
     }
 
-    public void addPokemon(int typeid, String name, int hp, int attack, int defense, int sattack, int sdefense, int speed, int catchrate, int levelup_exp) throws SQLException {
-        String sql = String.format("INSERT INTO pokemon(typeid, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp) VALUES('%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')", typeid, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp);
+    public void addPokemon(int typeid1, int typeid2, String name, int hp, int attack, int defense, int sattack, int sdefense, int speed, int catchrate, int levelup_exp) throws SQLException {
+
+        String sql;
+        if (typeid2 == -1)
+            sql = String.format("INSERT INTO pokemon(typeid1, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp) VALUES('%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')", typeid1, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp);
+        else
+            sql = String.format("INSERT INTO pokemon(typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp) VALUES('%d', '%d', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')", typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp);
         Statement stmt = connection.createStatement();
         stmt.execute(sql);
         stmt.execute("COMMIT;");
@@ -383,7 +388,7 @@ public class Database {
             }
             stmt.close();
             for (int i = 0;i < itemIds.size();++i)
-                result.AddItem(getItem(itemIds.elementAt(i).intValue()), counts.elementAt(i).intValue());
+                result.addItem(getItem(itemIds.elementAt(i).intValue()), counts.elementAt(i).intValue());
         } catch (SQLException ex) {
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
@@ -593,13 +598,17 @@ public class Database {
 
     public Pokemon getPokemon(int pmid) {
         Pokemon result = null;
-        String sql = String.format("SELECT typeid, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp FROM pokemon WHERE pmid = '%d'", pmid);
+        String sql = String.format("SELECT typeid1, typeid2, name, hp, attack, defense, sattack, sdefense, speed, catchrate, levelup_exp FROM pokemon WHERE pmid = '%d'", pmid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
-            if (rs.next())
-                result = new Pokemon(pmid, rs.getString("name"), rs.getInt("hp"), rs.getInt("attack"), rs.getInt("defense"), rs.getInt("sattack"), rs.getInt("sdefense"), rs.getInt("speed"), rs.getInt("catchrate"), rs.getInt("levelup_exp"), getType(rs.getInt("typeid")));
+            if (rs.next()) {
+                if (rs.getString("typeid2") != null)
+                    result = new Pokemon(pmid, rs.getString("name"), rs.getInt("hp"), rs.getInt("attack"), rs.getInt("defense"), rs.getInt("sattack"), rs.getInt("sdefense"), rs.getInt("speed"), rs.getInt("catchrate"), rs.getInt("levelup_exp"), getType(rs.getInt("typeid1")), getType(rs.getInt("typeid2")));
+                else
+                    result = new Pokemon(pmid, rs.getString("name"), rs.getInt("hp"), rs.getInt("attack"), rs.getInt("defense"), rs.getInt("sattack"), rs.getInt("sdefense"), rs.getInt("speed"), rs.getInt("catchrate"), rs.getInt("levelup_exp"), getType(rs.getInt("typeid1")), null);
+            }
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors
@@ -620,16 +629,24 @@ public class Database {
             ResultSet rs = stmt.getResultSet();
             if (rs.next()) {
                 Vector<Skill> skills = new Vector<Skill>();
+                Vector<Integer> skillsMaxpp = new Vector<Integer>();
+                Vector<Integer> skillsCurpp = new Vector<Integer>();
                 for (int i = 0;i < Pet.MAX_SKILL_PERR_PET;++i)
                 {
                     String skillStr = rs.getString("skill_" + (char)('a' + i));
-                    if (skillStr == null)
-                        continue;
-                    Integer skillid = Integer.parseInt(skillStr);
-                    Skill skill = getSkill(skillid);
-                    skills.add(skill);
+                    if (skillStr != null) {
+                        Integer skillid = Integer.parseInt(skillStr);
+                        Skill skill = getSkill(skillid);
+                        skills.add(skill);
+                        skillsMaxpp.add(new Integer(rs.getInt("maxpp_" + (char)('a' + i))));
+                        skillsCurpp.add(new Integer(rs.getInt("curpp_" + (char)('a' + i))));
+                    } else {
+                        skills.add(null);
+                        skillsMaxpp.add(null);
+                        skillsCurpp.add(null);
+                    }
                 }
-                result = new Pet(petid, rs.getString("name"), rs.getInt("max_hp"), rs.getInt("cur_hp"), rs.getInt("intimate"), rs.getInt("personal_hp"), rs.getInt("personal_attack"), rs.getInt("personal_defense"), rs.getInt("personal_sattack"), rs.getInt("personal_sdefense"), rs.getInt("personal_speed"), rs.getInt("effort_hp"), rs.getInt("effort_attack"), rs.getInt("effort_defense"), rs.getInt("effort_sattack"), rs.getInt("effort_sdefense"), rs.getInt("effort_speed"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("pm_status"), getPokemon(rs.getInt("pmid")), skills);
+                result = new Pet(petid, rs.getString("name"), rs.getInt("max_hp"), rs.getInt("cur_hp"), rs.getInt("intimate"), rs.getInt("personal_hp"), rs.getInt("personal_attack"), rs.getInt("personal_defense"), rs.getInt("personal_sattack"), rs.getInt("personal_sdefense"), rs.getInt("personal_speed"), rs.getInt("effort_hp"), rs.getInt("effort_attack"), rs.getInt("effort_defense"), rs.getInt("effort_sattack"), rs.getInt("effort_sdefense"), rs.getInt("effort_speed"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("pm_status"), getPokemon(rs.getInt("pmid")), skills, skillsMaxpp, skillsCurpp);
             }
             stmt.close();
         } catch (SQLException ex) {
@@ -711,6 +728,21 @@ public class Database {
 
     public void clearBox(int uid) {
         String sql = String.format("DELETE FROM box WHERE userid = %d", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void setPetSkillCurpp(int pid, int skill, int curpp) {
+        String sql = String.format("UPDATE pet SET curpp_%c = %d WHERE petid = %d", (char)('a' + skill), curpp, pid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);

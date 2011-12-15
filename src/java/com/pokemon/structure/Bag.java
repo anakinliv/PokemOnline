@@ -18,9 +18,24 @@ public class Bag {
     public Bag() {
     }
 
-    public void AddItem(Item item, int count) {
+    public void addItem(Item item, int count) {
         items.add(item);
         counts.add(new Integer(count));
+    }
+
+    public int getItemCount(int iid) {
+        for (int i = 0;i < items.size();++i)
+            if (items.elementAt(i).getIid() == iid)
+                return counts.elementAt(i).intValue();
+        return 0;
+    }
+
+    public void setItemCount(int iid, int count) {
+        for (int i = 0;i < items.size();++i)
+            if (items.elementAt(i).getIid() == iid) {
+                counts.set(i, count);
+                return;
+            }
     }
 
     public Vector<Integer> getCounts() {
