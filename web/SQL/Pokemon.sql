@@ -86,7 +86,7 @@ create table box
 /*==============================================================*/
 create table chat
 (
-   chatid               bigint not null,
+   chatid               bigint auto_increment not null,
    userid               bigint not null,
    time                 datetime not null,
    content              varchar(128) not null,
@@ -101,7 +101,7 @@ COLLATE utf8_general_ci;
 /*==============================================================*/
 create table effect
 (
-   effectid             bigint not null,
+   effectid             bigint auto_increment not null,
    target               bigint not null,
    value                bigint not null,
    primary key (effectid)
@@ -143,7 +143,7 @@ create table friend_request
 /*==============================================================*/
 create table item
 (
-   itemid               bigint not null,
+   itemid               bigint auto_increment not null,
    itemname             char(10) not null,
    description          varchar(100),
    primary key (itemid)
@@ -168,7 +168,7 @@ create table item_effect
 create table map
 (
    mapid                smallint not null,
-   areaid               smallint not null,
+   areaid               smallint auto_increment not null,
    primary key (areaid)
 );
 
@@ -178,7 +178,7 @@ create table map
 create table pet
 (
    pmid                 smallint not null,
-   petid                bigint not null,
+   petid                bigint auto_increment not null,
    skill_a              int,
    curpp_a              smallint,
    maxpp_a              smallint,
@@ -232,7 +232,7 @@ create table pm_skill
 /*==============================================================*/
 create table pokemon
 (
-   pmid                 smallint not null,
+   pmid                 smallint auto_increment not null,
    typeid1              smallint not null,
    typeid2              smallint,
    name                 char(10) not null,
@@ -256,7 +256,7 @@ COLLATE utf8_general_ci;
 /*==============================================================*/
 create table skill
 (
-   skillid              int not null,
+   skillid              int auto_increment not null,
    typeid               smallint not null,
    skillname            varchar(10) not null,
    description          varchar(100) not null,
@@ -281,7 +281,7 @@ create table skill_effect
 /*==============================================================*/
 create table type
 (
-   typeid               smallint not null,
+   typeid               smallint auto_increment not null,
    typename             char(5) not null,
    primary key (typeid)
 )
@@ -305,7 +305,7 @@ create table type_relation
 /*==============================================================*/
 create table user
 (
-   userid               bigint not null,
+   userid               bigint auto_increment not null,
    areaid               smallint not null,
    pet_1                bigint,
    pet_2                bigint,

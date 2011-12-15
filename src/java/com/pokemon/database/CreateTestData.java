@@ -204,16 +204,10 @@ public class CreateTestData {
     }
 
     public static void main(String[] args) {
-//        createLevelData(1);
-//        createLevelData(2);
-//        createLevelData(3);
-//        createLevelData(4);
-//        createLevelData(5);
-        Database d = new Database();
-        Pet pet = d.getPet(1);
-        pet.setMax_hp(123);
-        d.updatePet(pet);
-//        PetsOfAUser tmp = d.getPetsOfAUser(1);
-        d.close();
+        createLevelData(1);
+        createLevelData(2);
+        createLevelData(3);
+        createLevelData(4);
+        createLevelData(5);
     }
 }
