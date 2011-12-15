@@ -8,9 +8,8 @@
 <%@page contentType="json" pageEncoding="UTF-8"%>
 <%
     Object obj = request.getSession().getAttribute("user");
-    if (obj == null) {
-        response.sendRedirect("../index.jsp");
-    }
+    if (obj == null)
+        return;
     User user = (User)obj;
     String username = request.getParameter("username");
     String pageStr = request.getParameter("page");

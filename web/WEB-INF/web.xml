@@ -41,6 +41,10 @@
         <servlet-name>TerminateFriendshipServlet</servlet-name>
         <servlet-class>com.pokemon.servlet.TerminateFriendshipServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ChatServlet</servlet-name>
+        <jsp-file>/ChatServlet.jsp</jsp-file>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -68,6 +72,10 @@
     <servlet-mapping>
         <servlet-name>TerminateFriendshipServlet</servlet-name>
         <url-pattern>/terminate_friendship</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChatServlet</servlet-name>
+        <url-pattern>/chat_info</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

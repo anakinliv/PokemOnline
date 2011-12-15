@@ -29,6 +29,9 @@
                 <jsp:include flush="true" page="nav.jsp"></jsp:include>
         </div>
         <div id="main">
+            <div id="right">
+                <jsp:include flush="true" page="../chat.jsp"></jsp:include>
+            </div>
             <%= user.getUserName() %>：
                欢迎回来
                <br/>
