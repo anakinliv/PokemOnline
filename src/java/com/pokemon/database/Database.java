@@ -805,13 +805,49 @@ public class Database {
 
     public int getPunishmentLevel(int uid) {
         int result = 0;
-        String sql = String.format("SELECT punishment_level FROM user where userid = '%s'", uid);
+        String sql = String.format("SELECT punishment_level FROM user where userid = '%d'", uid);
         try {
             Statement stmt = connection.createStatement();
             if (stmt.execute(sql)) {
                 ResultSet rs = stmt.getResultSet();
                 if (rs.next()) {
                      result = rs.getInt("punishment_level");
+                }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public void setPunishmentLevel(int uid, int punishment) {
+        String sql = String.format("UPDATE user SET punishment_level  = 'd' where userid = '%d'", punishment, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public boolean userHaveFirstPet(int uid) {
+        boolean result = false;
+        String sql = String.format("SELECT pet_1 FROM user where userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next()) {
+                     result = rs.getString("pet_1") != null;
                 }
             }
             stmt.close();
@@ -855,6 +891,31 @@ public class Database {
                          }
                      }
                 }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public Vector<Skill> getRandomSkills() {
+        Vector<Skill> result = new Vector<Skill>();
+        Vector<Integer> skillIds = new Vector<Integer>();
+        String sql = String.format("SELECT skillid FROM skill");
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                while (rs.next())
+                     skillIds.add(rs.getInt("skillid"));
+                int size = skillIds.size();
+                int toRandCount = size > Pet.MAX_SKILL_PERR_PET ? Pet.MAX_SKILL_PERR_PET : size;
+                for (;toRandCount > 0;--toRandCount)
+                    result.add(getSkill(skillIds.elementAt((int)(Math.random() * size))));
             }
             stmt.close();
         } catch (SQLException ex) {

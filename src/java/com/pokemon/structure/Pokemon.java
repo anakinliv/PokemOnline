@@ -133,5 +133,12 @@ public class Pokemon {
     public void setType2(Type type2) {
         this.type2 = type2;
     }
+
+    public String getTypeName() {
+        String result = type1.getName();
+        if (type2 != null)
+            result += "," + type2.getName();
+        return result;
+    }
     
 }

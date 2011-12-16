@@ -176,4 +176,18 @@ public class CombatController {
         return true;
     }
 
+    public static boolean userCanCombat(int uid) {
+        Database db = Database.getNewDatabase();
+        boolean result = db.userHaveFirstPet(uid);
+        Database.databaseAfterUse(db);
+        return result;
+    }
+
+    public static CombatStates initCombatStates(int uid) {
+        Database db = Database.getNewDatabase();
+        int wildpmid = db.getRandomPmIdAtUserArea(uid);
+        Database.databaseAfterUse(db);
+        return new CombatStates(uid, wildpmid);
+    }
+
 }

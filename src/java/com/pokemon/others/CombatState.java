@@ -8,6 +8,8 @@ package com.pokemon.others;
 import com.pokemon.database.Database;
 import com.pokemon.structure.Bag;
 import com.pokemon.structure.Pet;
+import com.pokemon.structure.Pokemon;
+import com.pokemon.structure.Skill;
 import java.util.Vector;
 
 /**
@@ -33,6 +35,21 @@ public class CombatState {
             this.uid = -1;
             bag = new Bag();
             currentPetIndex = 0;
+            Database db = Database.getNewDatabase();
+            int punishmentLevel = db.getPunishmentLevel(uid);
+            db.setPunishmentLevel(uid, punishmentLevel + 1);
+            Pokemon pokemon = db.getPokemon(uid);
+            Vector<Skill> skills = db.getRandomSkills();
+            Vector<Integer> maxpps = new Vector<Integer>();
+            Vector<Integer> curpps = new Vector<Integer>();
+            for (int i = 0;i < skills.size();++i) {
+                maxpps.add(99);
+                curpps.add(0);
+            }
+            Pet pet = new Pet(-1, "Ò°¹Ö", 100, 100, 10 * punishmentLevel, punishmentLevel, punishmentLevel, punishmentLevel, punishmentLevel, punishmentLevel, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, pokemon, skills, maxpps, curpps);
+            petsOfUser = new Vector<Pet>();
+            petsOfUser.add(pet);
+            Database.databaseAfterUse(db);
             // TODO generate a wild pet and store it in petsOfUser
             // In fact, the uid here is the pmid of the wild pet
         }
@@ -48,6 +65,14 @@ public class CombatState {
 
     public Pet getCurrentPet() {
         return petsOfUser.elementAt(currentPetIndex);
+    }
+
+    public int getCurrentPetIndex() {
+        return currentPetIndex;
+    }
+    
+    public Vector<Pet> getPetsOfUser() {
+        return petsOfUser;
     }
 
     public boolean setCurrentPet(int pid) {
