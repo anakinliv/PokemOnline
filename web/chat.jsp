@@ -67,6 +67,11 @@
                 });
 
                 var chattextfield = Ext.create('Ext.form.field.Base', {
+                    listeners :{
+                        specialKey :function(field,e){
+                            if (e.getKey() == Ext.EventObject.ENTER) sendMessage();
+                        }
+                    }
                 });
 
 Ext.define('ChatUnit', {
@@ -77,10 +82,9 @@ Ext.define('ChatUnit', {
         {name: 'time'}
     ]
 });
-
-                var sendbutton = Ext.create('Ext.Button', {
-                    text: '发送',
-                    handler: function() {
+                function sendMessage() {
+                        if (chattextfield.getValue() == "")
+                            return;
                         Ext.Ajax.request({
                             url: '../chat_info',
                             params: {
@@ -98,7 +102,12 @@ Ext.define('ChatUnit', {
                                 }
                             }
                         });
-                    }
+                        chattextfield.setValue("");
+                }
+
+                var sendbutton = Ext.create('Ext.Button', {
+                    text: '发送',
+                    handler: sendMessage
                 });
 
                 

@@ -37,7 +37,7 @@
  {
    "username" : '<%= chat.getName() %>',
    "chatcontent" : '<%= chat.getWords() %>',
-   "time"    : 'time'
+   "time"    : '<%= df.format(chat.getDatetime().getTime()) %>'
  }
  <%
         first = false;
