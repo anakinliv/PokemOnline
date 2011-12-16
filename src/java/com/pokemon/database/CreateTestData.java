@@ -43,7 +43,7 @@ public class CreateTestData {
     private static void createEffects() throws SQLException {
         Database d = new Database();
         for (int i = 0; i < EFFECT_COUNT;++i)
-            d.addEffect(i, i);
+            d.addEffect(i, i, 1);
         d.close();
     }
 

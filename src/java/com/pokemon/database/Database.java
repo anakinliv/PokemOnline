@@ -70,8 +70,8 @@ public class Database {
         stmt.close();
     }
 
-    public void addEffect(int target, int value) throws SQLException {
-        String sql = String.format("INSERT INTO effect(target, value) VALUES('%d', '%d')", target, value);
+    public void addEffect(int target, int value, int longlast) throws SQLException {
+        String sql = String.format("INSERT INTO effect(target, value, longlast) VALUES('%d', '%d', '%d')", target, value, longlast);
         Statement stmt = connection.createStatement();
         stmt.execute(sql);
         stmt.execute("COMMIT;");
@@ -801,6 +801,69 @@ public class Database {
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
         }
+    }
+
+    public int getPunishmentLevel(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT punishment_level FROM user where userid = '%s'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next()) {
+                     result = rs.getInt("punishment_level");
+                }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public int getRandomPmIdAtUserArea(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT areaid FROM user where userid = '%s'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next()) {
+                     int areaId = rs.getInt("areaid");
+                     sql = String.format("SELECT pmid, rate FROM appear_rate where areaid = '%s'", areaId);
+                     Vector<Integer> pmids = new Vector<Integer>();
+                     Vector<Integer> rates = new Vector<Integer>();
+                     int sumRate = 0;
+                     rs = stmt.getResultSet();
+                     while (rs.next()) {
+                         pmids.add(rs.getInt("pmid"));
+                         rates.add(rs.getInt("rate"));
+                         sumRate += rs.getInt("rate");
+                     }
+                     if (sumRate > 0) {
+                         int randValue = (int) (1 + Math.random() * sumRate);
+                         sumRate = 0;
+                         for (int i = 0;i < pmids.size();++i) {
+                             sumRate += rates.elementAt(i).intValue();
+                             if (sumRate >= randValue) {
+                                 result = pmids.elementAt(i).intValue();
+                                 break;
+                             }
+                         }
+                     }
+                }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
     }
 
     public User logUser(String username, String password) {

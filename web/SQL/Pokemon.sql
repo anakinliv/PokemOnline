@@ -5,9 +5,10 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 CREATE SCHEMA IF NOT EXISTS `POKEMON` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `POKEMON`;
 
+
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2011/12/15 10:11:55                          */
+/* Created on:     2011/12/16 11:17:51                          */
 /*==============================================================*/
 
 
@@ -104,6 +105,7 @@ create table effect
    effectid             bigint auto_increment not null,
    target               bigint not null,
    value                bigint not null,
+   longlast             boolean not null,
    primary key (effectid)
 );
 
@@ -436,7 +438,7 @@ alter table user add constraint FK_Reference_32 foreign key (pet_4)
 alter table user add constraint FK_Reference_33 foreign key (pet_5)
       references pet (petid) on delete restrict on update restrict;
 
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
