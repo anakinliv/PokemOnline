@@ -5,20 +5,12 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
 <%
     Object obj = request.getSession().getAttribute("user");
     if (obj == null) {
         return;
     }
 %>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
-        <script type="text/javascript" src="../js/ext/ext-all.js"></script>
-        <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
         <script type="text/javascript">
             Ext.require([
                 'Ext.grid.*',
@@ -27,7 +19,7 @@
                 'Ext.Action'
             ]);
 
-            Ext.onReady(function() {
+            function createChatWidget() {
                 Ext.QuickTips.init();
 
                 // create the data store
@@ -62,8 +54,7 @@
                             dataIndex: 'time'
                         }
                     ],
-                    height: 300,
-                    stateful: false
+                    height: 300
                 });
 
                 var chattextfield = Ext.create('Ext.form.field.Base', {
@@ -112,13 +103,24 @@ Ext.define('ChatUnit', {
 
                 
                 var typePanel = Ext.create('Ext.Panel', {
-                    defaults     : { flex : 1 }, //auto stretch
-                    items: [chattextfield,sendbutton]
+                    layout: {
+                        type: 'hbox',
+                        padding: 5
+                    },
+                    items: [
+                        {
+                            region: "center",
+                            border: false,
+                            items: chattextfield
+                        },
+                        {
+                            region: "east",
+                            border: false,
+                            items: sendbutton
+                        }]
                 });
-                Ext.create('Ext.Panel', {
+                var result = Ext.create('Ext.Panel', {
                     title   : '聊天',
-                    renderTo: "chat",
-                    defaults     : { flex : 1 }, //auto stretch
                     items: [chatgrid, typePanel]
                 });
 
@@ -141,13 +143,6 @@ Ext.define('ChatUnit', {
                         }
                     });
                 }
-
-            });
+                return result;
+            }
         </script>
-        <title>聊天</title>
-    </head>
-    <body>
-        <div id="chat">
-        </div>
-    </body>
-</html>
