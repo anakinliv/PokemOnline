@@ -288,13 +288,13 @@ public class Database {
 
     public Effect getEffect(int eid) {
         Effect result = null;
-        String sql = String.format("SELECT target, value FROM effect WHERE effectid = '%d'", eid);
+        String sql = String.format("SELECT target, value, longlast FROM effect WHERE effectid = '%d'", eid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
-                result = new Effect(eid, rs.getInt("target"), rs.getInt("value"));
+                result = new Effect(eid, rs.getInt("target"), rs.getInt("value"), rs.getInt("longlast"));
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors

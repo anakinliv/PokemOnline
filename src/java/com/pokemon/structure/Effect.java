@@ -29,11 +29,13 @@ public class Effect {
   int id=0;
   int targetInDataBase=0;
   int v=0;
+  int longlast=0;
 
-  public Effect(int eid, int target, int value) {
+  public Effect(int eid, int target, int value, int longlast) {
       this.id = eid;
       this.targetInDataBase = target;
       this.v = value;
+      this.longlast = longlast;
   }
 
   public Effect(Effect another) {
@@ -56,5 +58,9 @@ public class Effect {
 
   public void setValue(int v) {
       this.v = v;
+  }
+
+  public int getLonglast() {
+      return longlast;
   }
 }
