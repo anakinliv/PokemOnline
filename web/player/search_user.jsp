@@ -259,6 +259,7 @@
                         items: [
                             {
                                 region: 'center',
+                                layout:'fit',
                                 items: grid
                             },createChatWidget()
                         ]

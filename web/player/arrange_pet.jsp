@@ -95,8 +95,8 @@
             // Column Model shortcut array
     var columns = [
         {text: "宠物名", flex: 1, sortable: false, dataIndex: 'name'},
-        {text: "宠物类型", width: 70, sortable: false, dataIndex: 'type'},
-        {text: "经验值", width: 70, sortable: false, dataIndex: 'exp'}
+        {text: "宠物类型", flex: 1, sortable: false, dataIndex: 'type'},
+        {text: "经验值", flex: 1, sortable: false, dataIndex: 'exp'}
     ];
 
     // declare the source Grid
@@ -181,6 +181,7 @@
                         items: [
                             {
                                 region: 'center',
+                                layout:'fit',
                                 items: displayPanel
                             },createChatWidget()
                         ]

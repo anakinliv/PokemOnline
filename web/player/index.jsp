@@ -25,8 +25,7 @@
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
         <jsp:include flush="true" page="../chat.jsp"></jsp:include>
         <jsp:include flush="true" page="nav.jsp"></jsp:include>
-        <script>
-            
+        <script type="text/javascript">
             Ext.onReady(function() {
                 Ext.create('Ext.Viewport', {
                     layout: {
@@ -52,7 +51,6 @@
                     }]
                 });
             });
-            
         </script>
         <title>Pokémon</title>
     </head>

@@ -51,16 +51,19 @@
                         {
                             text     : '用户名',
                             sortable : true,
+                            flex: 1,
                             dataIndex: 'username'
                         },
                         {
                             text     : '内容',
                             sortable : true,
+                            flex: 1,
                             dataIndex: 'chatcontent'
                         },
                         {
                             text     : '时间',
                             sortable : true,
+                            flex: 1,
                             dataIndex: 'time'
                         }
                     ],
@@ -68,8 +71,7 @@
                         xtype: 'toolbar',
                         dock: 'bottom',
                         items: [chattextfield, sendbutton]
-                    }],
-                    height: 300
+                    }]
                 });
 
 Ext.define('ChatUnit', {
@@ -127,6 +129,7 @@ Ext.define('ChatUnit', {
                         minWidth : 200,
                         width : 200,
                         title: '聊天',
+                        layout:'fit',
                         split: true,
                         animCollapse: true,
                         collapsible: true,
