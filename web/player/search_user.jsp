@@ -227,8 +227,9 @@
                     var pageStr = "" + i;
                     pages.push(
                         {text: pageStr,
+                         index: i,
                             handler: function(){
-                        moveToPage(eval(this.text));
+                        moveToPage(this.index);
                         }});
                 }
                 grid.addDocked({
