@@ -171,13 +171,7 @@
                     defaults: {
                         split: true
                     },
-                    items: [{
-                        region: 'north',
-                        split: false,
-                        animCollapse: true,
-                        collapsible: true,
-                        items: createNavMenu()
-                    },{
+                    items: [createNavMenu(),{
                         region: 'center',
                         layout: {
                             type: 'border',
@@ -188,17 +182,7 @@
                             {
                                 region: 'center',
                                 items: displayPanel
-                            },
-                            {
-                                region: 'east',
-                                minWidth : 200,
-                                width : 200,
-                                title: '聊天',
-                                split: true,
-                                animCollapse: true,
-                                collapsible: true,
-                                items : createChatWidget()
-                            }
+                            },createChatWidget()
                         ]
                     }]});
 

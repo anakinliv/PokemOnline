@@ -35,6 +35,10 @@
                             text: '登出',
                             handler: Ext.Function.pass(handleAction, '../logout.do')
                         },]});
-                return panel;
+                return {region: 'north',
+                        split: false,
+                        animCollapse: true,
+                        collapsible: true,
+                        items: panel};
             }
         </script>
