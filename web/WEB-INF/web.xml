@@ -45,6 +45,10 @@
         <servlet-name>ChatServlet</servlet-name>
         <jsp-file>/ChatServlet.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>CombatServlet</servlet-name>
+        <jsp-file>/CombatServlet.jsp</jsp-file>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -76,6 +80,10 @@
     <servlet-mapping>
         <servlet-name>ChatServlet</servlet-name>
         <url-pattern>/chat_info</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CombatServlet</servlet-name>
+        <url-pattern>/combat</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

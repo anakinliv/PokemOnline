@@ -24,6 +24,7 @@
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
         <jsp:include flush="true" page="../chat.jsp"></jsp:include>
+        <jsp:include flush="true" page="nav.jsp"></jsp:include>
         <script>
             
             Ext.onReady(function() {
@@ -39,9 +40,7 @@
                         region: 'north',
                         animCollapse: true,
                         collapsible: true,
-                        height: 100,
-                        minHeight: 60,
-                        html: 'north'
+                        items: createNavMenu()
                     },{
                         region: 'center',
                         layout: {
