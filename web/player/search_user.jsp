@@ -24,6 +24,8 @@
         <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
+        <jsp:include flush="true" page="../chat.jsp"></jsp:include>
+        <jsp:include flush="true" page="nav.jsp"></jsp:include>
         <script type="text/javascript">
             Ext.require([
                 'Ext.grid.*',
@@ -32,18 +34,13 @@
                 'Ext.Action'
             ]);
 
-            var store;
-            var pages=[];
-            var displayPanel;
-            var grid;
-
             Ext.onReady(function() {
                 Ext.QuickTips.init();
 
             var myData = [];
 
             // create the data store
-            store = Ext.create('Ext.data.ArrayStore', {
+            var store = Ext.create('Ext.data.ArrayStore', {
                 fields: [
                    {name: 'friendState', type: 'int'},
                    {name: 'friendStateStr'},
@@ -103,7 +100,19 @@
                 items: [sendRequestAction, acceptRequestAction]
             });
 
-            grid = Ext.create('Ext.grid.Panel', {
+            var searchTextField = Ext.create('Ext.form.field.Base', {
+                listeners :{
+                    specialKey :function(field,e){
+                        if (e.getKey() == Ext.EventObject.ENTER) doSearch();
+                    }
+                }
+            });
+            var searchbutton = Ext.create('Ext.Button', {
+                text: '搜索',
+                handler: doSearch
+            });
+
+            var grid = Ext.create('Ext.grid.Panel', {
                 store: store,
                 columnLines: true,
                 columns: [
@@ -120,9 +129,14 @@
                         dataIndex: 'friendStateStr'
                     }
                 ],
+                tbar:[searchTextField, searchbutton],
                 dockedItems: [{
                     xtype: 'toolbar',
                     items: [sendRequestAction, acceptRequestAction]
+                },{
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: []
                 }],
                 viewConfig: {
                     stripeRows: true,
@@ -134,8 +148,6 @@
                         }
                     }
                 },
-                height: 350,
-                width: 600,
                 title: '搜索结果',
                 stateful: false
             });
@@ -165,24 +177,7 @@
                     }
                 }
             });
-            displayPanel = Ext.create('Ext.Panel', {
-                width        : 650,
-                height       : 450,
-                layout       : {
-                    type: 'hbox',
-                    align: 'stretch',
-                    padding: 5
-                },
-                renderTo     : 'panel',
-                defaults     : { flex : 1 }, //auto stretch
-                items        : [grid],
-                dockedItems  : {
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    items: pages
-                }
-            });
-        });
+
             var currentPage = 1;
             var currentSearchString = "player1";
             var searchResult;
@@ -211,16 +206,16 @@
                 }
             }
 
-            function do_search() {
+            function doSearch() {
                 currentPage = 1;
-                currentSearchString = document.getElementById("username_input").value;
+                currentSearchString = searchTextField.getValue();
                 sendSearchRequest(currentPage);
             }
 
             function clearResult() {
                 store.loadData([]);
-                displayPanel.removeDocked(Ext.getCmp('docked'), true);
-                displayPanel.doComponentLayout();
+                grid.removeDocked(Ext.getCmp('docked'), true);
+                grid.doComponentLayout();
             }
 
             function showResult() {
@@ -236,31 +231,56 @@
                         moveToPage(eval(this.text));
                         }});
                 }
-            displayPanel.addDocked({
+                grid.addDocked({
                     id: "docked",
+                    border: "false",
                     xtype: 'toolbar',
                     dock: 'bottom',
                     items: pages
                 });
-            displayPanel.doComponentLayout();
+                grid.doComponentLayout();
             }
+
+                Ext.create('Ext.Viewport', {
+                    layout: {
+                        type: 'border',
+                        padding: 5
+                    },
+                    defaults: {
+                        split: true
+                    },
+                    items: [{
+                        region: 'north',
+                        split: false,
+                        animCollapse: true,
+                        collapsible: true,
+                        items: createNavMenu()
+                    },{
+                        region: 'center',
+                        layout: {
+                            type: 'border',
+                            padding: 5
+                        },
+                        border: false,
+                        items: [
+                            {
+                                region: 'center',
+                                items: grid
+                            },
+                            {
+                                region: 'east',
+                                minWidth : 200,
+                                width : 200,
+                                title: '聊天',
+                                split: true,
+                                animCollapse: true,
+                                collapsible: true,
+                                items : createChatWidget()
+                            }
+                        ]
+                    }]});
+        });
         </script>
         <title>Pokémon——查找用户</title>
     </head>
-
-    <body>
-        <div id="top">
-                <jsp:include flush="true" page="nav.jsp"></jsp:include>
-        </div>
-        <div id="main">
-            <table id="search_table">
-                <tr>
-                    <td>用户名</td><td><input type="text" id="username_input"/></td><td><button onclick="do_search();">查找</button></td>
-                </tr>
-            </table>
-
-            <div id="panel">
-            </div>
-        </div>
-    </body>
 </html>

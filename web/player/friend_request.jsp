@@ -25,6 +25,8 @@
         <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
+        <jsp:include flush="true" page="../chat.jsp"></jsp:include>
+        <jsp:include flush="true" page="nav.jsp"></jsp:include>
         <script type="text/javascript">
             Ext.require([
                 'Ext.grid.*',
@@ -105,10 +107,7 @@
                         }
                     }
                 },
-                height: 350,
-                width: 600,
                 title: '处理好友请求',
-                renderTo: 'friend_request',
                 stateful: false
             });
             grid.getSelectionModel().on({
@@ -119,18 +118,48 @@
                         action.disable();
                 }
             });
+
+                Ext.create('Ext.Viewport', {
+                    layout: {
+                        type: 'border',
+                        padding: 5
+                    },
+                    defaults: {
+                        split: true
+                    },
+                    items: [{
+                        region: 'north',
+                        split: false,
+                        animCollapse: true,
+                        collapsible: true,
+                        items: createNavMenu()
+                    },{
+                        region: 'center',
+                        layout: {
+                            type: 'border',
+                            padding: 5
+                        },
+                        border: false,
+                        items: [
+                            {
+                                region: 'center',
+                                items: grid
+                            },
+                            {
+                                region: 'east',
+                                minWidth : 200,
+                                width : 200,
+                                title: '聊天',
+                                split: true,
+                                animCollapse: true,
+                                collapsible: true,
+                                items : createChatWidget()
+                            }
+                        ]
+                    }]
+                });
         });
         </script>
         <title>Pokémon——处理好友请求</title>
     </head>
-
-    <body>
-        <div id="top">
-                <jsp:include flush="true" page="nav.jsp"></jsp:include>
-        </div>
-        <div id="main">
-            <div id="friend_request">
-            </div>
-        </div>
-    </body>
 </html>

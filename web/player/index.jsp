@@ -57,10 +57,11 @@
                                 region: 'east',
                                 minWidth : 200,
                                 width : 200,
+                                title: '聊天',
                                 split: true,
                                 animCollapse: true,
                                 collapsible: true,
-                                items : [createChatWidget()]
+                                items : createChatWidget()
                             }
                         ]
                     }]
