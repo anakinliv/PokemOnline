@@ -31,7 +31,8 @@
                     ]
                 });
 
-                var chattextfield = Ext.create('Ext.form.field.Base', {
+                var chattextfield = Ext.create('Ext.form.field.Text', {
+                    flex: 1,
                     listeners :{
                         specialKey :function(field,e){
                             if (e.getKey() == Ext.EventObject.ENTER) sendMessage();
