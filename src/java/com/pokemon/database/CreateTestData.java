@@ -22,7 +22,7 @@ public class CreateTestData {
     final private static int POKEMON_COUNT = 100;
     final private static int SKILL_PER_POKEMON = 6;
     final private static int PLAYER_COUNT = 100;
-    final private static int PM_COUNT = 10;
+    final private static int GM_COUNT = 10;
     final private static int ADMIN_COUNT = 1;
     final private static int ITEM_PER_PLAYER_COUNT = 5;
 
@@ -123,8 +123,8 @@ public class CreateTestData {
         Database d = new Database();
         for (int i = 0; i < PLAYER_COUNT;++i)
             d.addUser(String.format("player%d", i), "1", 1);
-        for (int i = 0; i < PM_COUNT;++i)
-            d.addUser(String.format("pm%d", i), "1", 2);
+        for (int i = 0; i < GM_COUNT;++i)
+            d.addUser(String.format("gm%d", i), "1", 2);
         for (int i = 0; i < ADMIN_COUNT;++i)
             d.addUser(String.format("admin%d", i), "1", 3);
         d.close();

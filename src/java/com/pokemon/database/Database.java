@@ -212,16 +212,13 @@ public class Database {
     
     public User getUserOverallInfo(int uid) {
         User result = null;
-        String sql = String.format("SELECT username, type FROM user WHERE userid = '%d'", uid);
+        String sql = String.format("SELECT username, type, rights FROM user WHERE userid = '%d'", uid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next()) {
-                result = new User();
-                result.setUid(uid);
-                result.setUserName(rs.getString("username"));
-                result.setType(rs.getInt("type"));
+                result = new User(uid, rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
             }
             stmt.close();
         } catch (SQLException ex) {
@@ -467,7 +464,11 @@ public class Database {
 
     public SearchResult searchUser(String username, int page) {
         SearchResult result = new SearchResult();
-        String sql = String.format("SELECT userid, username, type FROM user WHERE username like '%s'", username);
+        String sql;
+        if ("".equals(username))
+            sql = "SELECT userid, username, type FROM user WHERE type = 2";
+        else
+            sql = String.format("SELECT userid, username, type, rights FROM user WHERE username like '%s'", username);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
@@ -478,7 +479,7 @@ public class Database {
                 ++count;
                 if (count > SearchResult.COUNT_PER_PAGE * (page - 1) &&
                     count <= SearchResult.COUNT_PER_PAGE * page) {
-                    User currentUser = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"));
+                    User currentUser = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
                     result.result.add(currentUser);
                 }
             }
@@ -927,15 +928,30 @@ public class Database {
         return result;
     }
 
+    public void setUserRights(int uid, int rights) {
+        String sql = String.format("UPDATE user SET rights = %d WHERE userid = %d", rights, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+                                                                                                                                                                            
     public User logUser(String username, String password) {
-        String sql = String.format("SELECT userid, username, type FROM user where username = '%s' and password = '%s'", username, password);
+        String sql = String.format("SELECT userid, username, type, rights FROM user where username = '%s' and password = '%s'", username, password);
         User user = null;
         try {
             Statement stmt = connection.createStatement();
             if (stmt.execute(sql)) {
                 ResultSet rs = stmt.getResultSet();
                 if (rs.next()) {
-                     user = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"));
+                     user = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
                 }
             }
             stmt.close();

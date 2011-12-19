@@ -49,6 +49,10 @@
         <servlet-name>CombatServlet</servlet-name>
         <jsp-file>/CombatServlet.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>SetRightsServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.SetRightsServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -84,6 +88,10 @@
     <servlet-mapping>
         <servlet-name>CombatServlet</servlet-name>
         <url-pattern>/combat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetRightsServlet</servlet-name>
+        <url-pattern>/set_rights</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

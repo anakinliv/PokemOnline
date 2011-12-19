@@ -34,7 +34,7 @@
                             xtype:'button',
                             text: '登出',
                             handler: Ext.Function.pass(handleAction, '../logout.do')
-                        },]});
+                        }]});
                 return {region: 'north',
                         split: false,
                         animCollapse: true,

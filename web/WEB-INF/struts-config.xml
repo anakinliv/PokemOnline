@@ -23,8 +23,8 @@
     <action-mappings>
         <action name="LoginForm" path="/login" scope="request" type="com.pokemon.struts.LoginAction" validate="false">
             <forward name="player" path="/player/index.jsp" redirect="true"/>
-            <forward name="gm" path="/gm/index.html" redirect="true"/>
-            <forward name="admin" path="/admin/index.html" redirect="true"/>
+            <forward name="gm" path="/gm/index.jsp" redirect="true"/>
+            <forward name="admin" path="/admin/index.jsp" redirect="true"/>
             <forward name="failure" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/logout" type="com.pokemon.struts.LogoutAction">
@@ -52,6 +52,10 @@
         </action>
         <action name="DoArrangePetForm" path="/do_arrange_pet" scope="request" type="com.pokemon.struts.DoArrangePetAction" validate="false">
             <forward name="success" path="/player/arrange_pet.do" redirect="true"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action path="/gm/arrange_rights" type="com.pokemon.struts.ArrangeRightsAction">
+            <forward name="success" path="/gm/arrange_rights.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/Welcome" forward="/welcomeStruts.jsp"/>
