@@ -3,12 +3,10 @@
     Created on : 2011-12-10, 18:47:32
     Author     : Sidney
 --%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.pokemon.structure.*" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
-
 <%
     Object obj = request.getSession().getAttribute("user");
     if (obj == null) {
@@ -16,7 +14,6 @@
     }
     User user = (User)obj;
 %>
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

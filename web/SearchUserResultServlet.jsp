@@ -70,7 +70,7 @@
             return;
         }%><%= count == 1 ? "" : "," %>
   {
-<% if ("player".equals(typeStr)) { %> ("friendState"    : <%= state %>,
+<% if ("player".equals(typeStr)) { %>    "friendState"    : <%= state %>,
     "friendStateStr" : '<%= stateStr %>',
 <% } else if ("gm".equals(typeStr)) { %> "rights" : <%= state %>,
 <% } else if ("admin".equals(typeStr)) { %> "type" : <%= state %>,<% } %>
