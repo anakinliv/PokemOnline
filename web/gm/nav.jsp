@@ -18,6 +18,10 @@
                             xtype:'button',
                             text: '修改玩家数据',
                             handler: Ext.Function.pass(handleAction, 'change_user_property.do')
+                        },{
+                            xtype:'button',
+                            text: '登出',
+                            handler: Ext.Function.pass(handleAction, '../logout.do')
                         }]});
                 return {region: 'north',
                         split: false,

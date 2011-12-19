@@ -3,7 +3,6 @@
     Created on : 2011-12-19, 10:10:15
     Author     : Sidney
 --%>
-<%@page import="java.util.Vector"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.pokemon.structure.*" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -306,6 +305,21 @@
 
             function showResult() {
                 clearResult();
+                for (i = 0;i < searchResult.users.length;++i) {
+                    if ((searchResult.users[i].rights & <%= User.CHAT_RIGHTS %>) == <%= User.CHAT_RIGHTS %>)
+                        searchResult.users[i].chat_rights = "是";
+                    else
+                        searchResult.users[i].chat_rights = "否";
+                    if ((searchResult.users[i].rights & <%= User.ADVENTURE_RIGHTS %>) == <%= User.ADVENTURE_RIGHTS %>)
+                        searchResult.users[i].adventure_rights = "是";
+                    else
+                        searchResult.users[i].adventure_rights = "否";
+                    if ((searchResult.users[i].rights & <%= User.LOGIN_RIGHTS %>) == <%= User.LOGIN_RIGHTS %>)
+                        searchResult.users[i].login_rights = "是";
+                    else
+                        searchResult.users[i].login_rights = "否";
+                }
+
                 store.loadData(searchResult.users);
 
                 pages=[];
