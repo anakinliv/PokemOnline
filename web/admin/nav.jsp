@@ -12,6 +12,10 @@
                 var panel=new Ext.Panel({
                         tbar:[{
                             xtype:'button',
+                            text: '首页',
+                            handler: Ext.Function.pass(handleAction, 'index.do')
+                        },{
+                            xtype:'button',
                             text: '设定管理员',
                             handler: Ext.Function.pass(handleAction, 'set_gm.do')
                         },{

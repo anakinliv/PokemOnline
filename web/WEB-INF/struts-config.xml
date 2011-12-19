@@ -22,11 +22,14 @@
 
     <action-mappings>
         <action name="LoginForm" path="/login" scope="request" type="com.pokemon.struts.LoginAction" validate="false">
-            <forward name="player" path="/player/index.jsp" redirect="true"/>
-            <forward name="gm" path="/gm/index.jsp" redirect="true"/>
-            <forward name="admin" path="/admin/index.jsp" redirect="true"/>
+            <forward name="player" path="/player/index.do" redirect="true"/>
+            <forward name="gm" path="/gm/index.do" redirect="true"/>
+            <forward name="admin" path="/admin/index.do" redirect="true"/>
             <forward name="failure" path="/index.jsp" redirect="true"/>
         </action>
+        <action path="/player/index" forward="/player/index.jsp"/>
+        <action path="/gm/index" forward="/gm/index.jsp"/>
+        <action path="/admin/index" forward="/admin/index.jsp"/>
         <action path="/logout" type="com.pokemon.struts.LogoutAction">
             <forward name="success" path="/index.jsp" redirect="true"/>
         </action>
