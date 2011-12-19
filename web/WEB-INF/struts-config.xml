@@ -33,6 +33,7 @@
         <action path="/logout" type="com.pokemon.struts.LogoutAction">
             <forward name="success" path="/index.jsp" redirect="true"/>
         </action>
+        <action path="/player/adventure" forward="/player/adventure.jsp"/>
         <action path="/player/friend_request" type="com.pokemon.struts.FriendRequestAction">
             <forward name="success" path="/player/friend_request.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
@@ -45,10 +46,7 @@
             <forward name="success" path="/player/bag_list.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
-        <action path="/player/search_user" type="com.pokemon.struts.SearchUserInitAction">
-            <forward name="success" path="/player/search_user.jsp"/>
-            <forward name="failed" path="/index.jsp" redirect="true"/>
-        </action>
+        <action path="/player/search_user" forward="/player/search_user.jsp"/>
         <action path="/player/arrange_pet" type="com.pokemon.struts.ArrangePetAction">
             <forward name="success" path="/player/arrange_pet.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
