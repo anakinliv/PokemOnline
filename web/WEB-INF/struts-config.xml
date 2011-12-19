@@ -58,6 +58,10 @@
             <forward name="success" path="/gm/arrange_rights.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
+        <action path="/admin/set_gm" type="com.pokemon.struts.SetGMAction">
+            <forward name="success" path="/admin/set_gm.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
         <action path="/Welcome" forward="/welcomeStruts.jsp"/>
     </action-mappings>
     

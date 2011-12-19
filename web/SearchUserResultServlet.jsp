@@ -59,11 +59,21 @@
              }
          } else if ("gm".equals(typeStr)) {
              state = currentUser.getRights();
-         }
-%><%= count == 1 ? "" : "," %>
+         } else if ("admin".equals(typeStr)) {
+             state = currentUser.getType();
+         } else { %>
+{
+"totalPages" : <%= 0 %>,
+"page"       : <%= 0 %>,
+"users"      : []}
+<%
+            return;
+        }%><%= count == 1 ? "" : "," %>
   {
 <% if ("player".equals(typeStr)) { %> ("friendState"    : <%= state %>,
-    "friendStateStr" : '<%= stateStr %>', <% } else if ("gm".equals(typeStr)) { %> "rights" : <%= state %>,<% } %>
+    "friendStateStr" : '<%= stateStr %>',
+<% } else if ("gm".equals(typeStr)) { %> "rights" : <%= state %>,
+<% } else if ("admin".equals(typeStr)) { %> "type" : <%= state %>,<% } %>
     "userid"         : <%= currentUser.getUid() %>,
     "username"       : "<%= currentUser.getUserName() %>"
   }

@@ -3,7 +3,6 @@
     Created on : 2011-12-12, 14:16:44
     Author     : Sidney
 --%>
-<%@page import="java.util.Vector"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.pokemon.structure.*" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -182,7 +181,6 @@
                         },
                         success: function(response, options) {
                             searchResult = eval("(" + response.responseText + ')');
-                            needRefresh = false;
                             if (searchResult.totalPages > 0)
                                 showResult();
                             else

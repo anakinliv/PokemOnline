@@ -942,6 +942,21 @@ public class Database {
             System.out.println("VendorError: " + ex.getErrorCode());
         }
     }
+
+    public void setUserType(int uid, int type) {
+        String sql = String.format("UPDATE user SET type = %d WHERE userid = %d", type, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
                                                                                                                                                                             
     public User logUser(String username, String password) {
         String sql = String.format("SELECT userid, username, type, rights FROM user where username = '%s' and password = '%s'", username, password);

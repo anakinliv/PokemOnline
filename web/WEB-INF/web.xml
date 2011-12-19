@@ -53,6 +53,10 @@
         <servlet-name>SetRightsServlet</servlet-name>
         <servlet-class>com.pokemon.servlet.SetRightsServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SetTypeServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.SetTypeServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -92,6 +96,10 @@
     <servlet-mapping>
         <servlet-name>SetRightsServlet</servlet-name>
         <url-pattern>/set_rights</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetTypeServlet</servlet-name>
+        <url-pattern>/set_type</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
