@@ -21,7 +21,7 @@ public class Database {
     private Connection connection = null;
     final private static String dbAddress = "localhost";
     final private static String dbPort = "3306";
-    final private static String dbName = "pokemon";
+    final private static String dbName = "POKEMON";
 
     public static Database getNewDatabase() {
         Database db = new Database();
@@ -42,7 +42,7 @@ public class Database {
             connection =
                     DriverManager.getConnection("jdbc:mysql://" + dbAddress +
                     ":" + dbPort + "/" + dbName + "?" +
-                    "user=root&password=tecton&useUnicode=true&characterEncoding=UTF-8");
+                    "user=root&password=rt4px6D.3&useUnicode=true&characterEncoding=UTF-8");
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
