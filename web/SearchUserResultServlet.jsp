@@ -73,6 +73,7 @@
 <% if ("player".equals(typeStr)) { %>    "friendState"    : <%= state %>,
     "friendStateStr" : '<%= stateStr %>',
 <% } else if ("gm".equals(typeStr)) { %> "rights" : <%= state %>,
+    "money"          : <%= currentUser.getMoney() %>,
 <% } else if ("admin".equals(typeStr)) { %> "type" : <%= state %>,<% } %>
     "userid"         : <%= currentUser.getUid() %>,
     "username"       : "<%= currentUser.getUserName() %>"

@@ -14,6 +14,7 @@ public class User {
     private String userName="";
     private int type=0;
     private int rights=0;
+    private int money=0;
     public static final int PLAYER = 1;
     public static final int GM = 2;
     public static final int ADMIN = 3;
@@ -75,4 +76,13 @@ public class User {
     public void setRights(int rights) {
         this.rights = rights;
     }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+    
 }

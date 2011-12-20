@@ -57,6 +57,10 @@
         <servlet-name>SetTypeServlet</servlet-name>
         <servlet-class>com.pokemon.servlet.SetTypeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ChangeUserPropertyServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.ChangeUserPropertyServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -100,6 +104,10 @@
     <servlet-mapping>
         <servlet-name>SetTypeServlet</servlet-name>
         <url-pattern>/set_type</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeUserPropertyServlet</servlet-name>
+        <url-pattern>/change_user_property</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

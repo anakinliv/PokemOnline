@@ -6,10 +6,8 @@
 package com.pokemon.servlet;
 
 import com.pokemon.database.Database;
-import com.pokemon.others.ChatController;
 import com.pokemon.structure.User;
 import java.io.IOException;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +18,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author Sidney
  */
-public class SetRightsServlet extends HttpServlet {
+public class ChangeUserPropertyServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -41,23 +39,14 @@ public class SetRightsServlet extends HttpServlet {
         String userStr = request.getParameter("uid");
         if (userStr == null ||  "".equals(userStr))
             return;
-        String rightsStr = request.getParameter("rights");
-        if (rightsStr == null || "".equals(rightsStr))
+        String moneyStr = request.getParameter("money");
+        if (moneyStr == null || "".equals(moneyStr))
             return;
         int uid = Integer.parseInt(userStr);
-        int rights = Integer.parseInt(rightsStr);
+        int money = Integer.parseInt(moneyStr);
         Database db = Database.getNewDatabase();
-        db.setUserRights(uid, rights);
+        db.setUserProperty(uid, money);
         Database.databaseAfterUse(db);
-
-        Boolean canChat = (rights & User.CHAT_RIGHTS) == User.CHAT_RIGHTS;
-        ServletContext application = session.getServletContext();
-        Object obj = application.getAttribute("chatcontroller");
-        if (obj == null) {
-            obj = new ChatController();
-            application.setAttribute("chatcontroller", obj);
-        }
-        ((ChatController)obj).setPermit(uid, canChat);
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

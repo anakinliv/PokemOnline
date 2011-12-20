@@ -481,9 +481,9 @@ public class Database {
         SearchResult result = new SearchResult();
         String sql;
         if ("".equals(username))
-            sql = "SELECT userid, username, type FROM user WHERE type = 2";
+            sql = "SELECT userid, username, type, money, rights FROM user WHERE type = 2";
         else
-            sql = String.format("SELECT userid, username, type, rights FROM user WHERE username like '%s'", username);
+            sql = String.format("SELECT userid, username, type, money, rights FROM user WHERE username like '%s'", username);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
@@ -495,6 +495,7 @@ public class Database {
                 if (count > SearchResult.COUNT_PER_PAGE * (page - 1) &&
                     count <= SearchResult.COUNT_PER_PAGE * page) {
                     User currentUser = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
+                    currentUser.setMoney(rs.getInt("money"));
                     result.result.add(currentUser);
                 }
             }
@@ -1022,6 +1023,21 @@ public class Database {
 
     public void setUserRights(int uid, int rights) {
         String sql = String.format("UPDATE user SET rights = %d WHERE userid = %d", rights, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void setUserProperty(int uid, int money) {
+        String sql = String.format("UPDATE user SET money = %d WHERE userid = %d", money, uid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);

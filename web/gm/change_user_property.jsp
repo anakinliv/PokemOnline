@@ -1,6 +1,6 @@
 <%-- 
-    Document   : set_gm
-    Created on : 2011-12-19, 14:54:15
+    Document   : change_user_property
+    Created on : 2011-12-20, 15:07:40
     Author     : Sidney
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -41,57 +41,23 @@
             // create the data store
             var store = Ext.create('Ext.data.ArrayStore', {
                 fields: [
-                   {name: 'type', type: 'int'},
                    {name: 'userid', type: 'int'},
                    {name: 'username'},
-                   {name: 'type_str'}
+                   {name: 'money', type: 'int'}
                 ],
                 data: myData
             });
 
-            function setType(uid, type) {
+            function setUserProperty(data) {
                 Ext.Ajax.request({
-                    url: '../set_type',
+                    url: '../change_user_property',
                     params: {
-                        uid:uid,
-                        type:type
+                        uid:data.userid,
+                        money:data.money
                     },
                     success: function(response, options) {}
                 });
-                resetActions(grid.getSelectionModel().getSelection());
             }
-
-            var setToGMAction = Ext.create('Ext.Action', {
-                text: '设为管理员',
-                disabled: true,
-                handler: function(widget, event) {
-                    var rec = grid.getSelectionModel().getSelection()[0];
-                    if (rec) {
-                        rec.data.type = <%= User.GM %>;
-                        rec.data.type_str = "管理员";
-                        rec.commit();
-                        setType(rec.data.userid, <%= User.GM %>);
-                    }
-                }
-            });
-
-            var setToPlayerAction = Ext.create('Ext.Action', {
-                text: '设为普通玩家',
-                disabled: true,
-                handler: function(widget, event) {
-                    var rec = grid.getSelectionModel().getSelection()[0];
-                    if (rec) {
-                        rec.data.type = <%= User.PLAYER %>;
-                        rec.data.type_str = "普通玩家";
-                        rec.commit();
-                        setType(rec.data.userid, <%= User.PLAYER %>);
-                    }
-                }
-            });
-
-            var contextMenu = Ext.create('Ext.menu.Menu', {
-                items: [setToGMAction, setToPlayerAction]
-            });
 
             var searchTextField = Ext.create('Ext.form.field.Base', {
                 listeners :{
@@ -100,9 +66,14 @@
                     }
                 }
             });
+
             var searchbutton = Ext.create('Ext.Button', {
                 text: '搜索',
                 handler: doSearch
+            });
+
+            var cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
+                clicksToEdit: 1
             });
 
             var grid = Ext.create('Ext.grid.Panel', {
@@ -116,17 +87,20 @@
                         dataIndex: 'username'
                     },
                     {
-                        text     : '类型',
+                        text     : '金钱',
                         flex     : 1,
                         sortable : true,
-                        dataIndex: 'type_str'
+                        dataIndex: 'money',
+                        editor: {
+                            xtype: 'numberfield',
+                            allowBlank: false,
+                            minValue: 0,
+                            maxValue: 100000
+                        }
                     }
                 ],
                 tbar:[searchTextField, searchbutton],
                 dockedItems: [{
-                    xtype: 'toolbar',
-                    items: [setToGMAction, setToPlayerAction]
-                },{
                     xtype: 'toolbar',
                     dock: 'bottom',
                     items: []
@@ -142,37 +116,13 @@
                     }
                 },
                 title: '搜索结果',
-                stateful: false
+                stateful: false,
+                plugins: [cellEditing]
             });
 
-            function resetActions(selections) {
-                if (selections.length) {
-                    var rec = selections[0];
-                    switch (rec.data.type) {
-                        case <%= User.GM %>:
-                            setToGMAction.disable();
-                            setToPlayerAction.enable();
-                            break;
-                        case <%= User.PLAYER %>:
-                            setToGMAction.enable();
-                            setToPlayerAction.disable();
-                            break;
-                        default:
-                            setToGMAction.disable();
-                            setToPlayerAction.disable();
-                            break;
-                    }
-                }
-                else {
-                    setToGMAction.disable();
-                    setToPlayerAction.disable();
-                }
-            }
-
-            grid.getSelectionModel().on({
-                selectionchange: function(sm, selections) {
-                    resetActions(selections);
-                }
+            grid.on('edit', function(editor, e) {
+                // commit the changes right after editing finished
+                setUserProperty(e.record.data);
             });
 
             var currentPage = 1;
@@ -184,7 +134,7 @@
                         params: {
                             username:currentSearchString,
                             page:from,
-                            type:"admin"
+                            type:"gm"
                         },
                         success: function(response, options) {
                             searchResult = eval("(" + response.responseText + ')');
@@ -219,19 +169,6 @@
 
             function showResult() {
                 clearResult();
-                for (i = 0;i < searchResult.users.length;++i) {
-                    switch (searchResult.users[i].type) {
-                        case <%= User.ADMIN %>:
-                            searchResult.users[i].type_str = "超级管理员";
-                            break;
-                        case <%= User.GM %>:
-                            searchResult.users[i].type_str = "管理员";
-                            break;
-                        case <%= User.PLAYER %>:
-                            searchResult.users[i].type_str = "普通玩家";
-                            break;
-                    }
-                }
                 store.loadData(searchResult.users);
 
                 pages=[];
