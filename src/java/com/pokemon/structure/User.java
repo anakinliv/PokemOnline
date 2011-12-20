@@ -13,14 +13,23 @@ public class User {
     private int uid=-1;
     private String userName="";
     private int type=0;
+    private int rights=0;
+    private int money=0;
+    public static final int PLAYER = 1;
+    public static final int GM = 2;
+    public static final int ADMIN = 3;
+    public static final int CHAT_RIGHTS = 1;
+    public static final int ADVENTURE_RIGHTS = 2;
+    public static final int LOGIN_RIGHTS = 4;
 
     public User() {
     }
 
-    public User(int uid, String userName, int type) {
+    public User(int uid, String userName, int type, int rights) {
         this.uid = uid;
         this.userName = userName;
         this.type = type;
+        this.rights = rights;
     }
 
     public int getType() {
@@ -60,5 +69,20 @@ public class User {
         this.userName = userName;
     }
 
+    public int getRights() {
+        return rights;
+    }
 
+    public void setRights(int rights) {
+        this.rights = rights;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+    
 }

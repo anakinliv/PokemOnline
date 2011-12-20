@@ -12,6 +12,8 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import com.pokemon.structure.*;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -209,19 +211,29 @@ public class Database {
         stmt.execute("COMMIT;");
         stmt.close();
     }
+
+    public void setPetSkill(int pid, int skillPos, int sid) {
+            String skill = sid == 0 ? "null" : String.valueOf(sid);
+            String sql = String.format("UPDATE pet SET skill_%c = %s WHERE petid = %d", (char) ('a' + skillPos), skill, pid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public User getUserOverallInfo(int uid) {
         User result = null;
-        String sql = String.format("SELECT username, type FROM user WHERE userid = '%d'", uid);
+        String sql = String.format("SELECT username, type, rights FROM user WHERE userid = '%d'", uid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next()) {
-                result = new User();
-                result.setUid(uid);
-                result.setUserName(rs.getString("username"));
-                result.setType(rs.getInt("type"));
+                result = new User(uid, rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
             }
             stmt.close();
         } catch (SQLException ex) {
@@ -288,13 +300,13 @@ public class Database {
 
     public Effect getEffect(int eid) {
         Effect result = null;
-        String sql = String.format("SELECT target, value FROM effect WHERE effectid = '%d'", eid);
+        String sql = String.format("SELECT target, value, longlast FROM effect WHERE effectid = '%d'", eid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
-                result = new Effect(eid, rs.getInt("target"), rs.getInt("value"));
+                result = new Effect(eid, rs.getInt("target"), rs.getInt("value"), rs.getInt("longlast"));
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors
@@ -467,7 +479,11 @@ public class Database {
 
     public SearchResult searchUser(String username, int page) {
         SearchResult result = new SearchResult();
-        String sql = String.format("SELECT userid, username, type FROM user WHERE username like '%s'", username);
+        String sql;
+        if ("".equals(username))
+            sql = "SELECT userid, username, type, money, rights FROM user WHERE type = 2";
+        else
+            sql = String.format("SELECT userid, username, type, money, rights FROM user WHERE username like '%s'", username);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
@@ -478,7 +494,8 @@ public class Database {
                 ++count;
                 if (count > SearchResult.COUNT_PER_PAGE * (page - 1) &&
                     count <= SearchResult.COUNT_PER_PAGE * page) {
-                    User currentUser = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"));
+                    User currentUser = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
+                    currentUser.setMoney(rs.getInt("money"));
                     result.result.add(currentUser);
                 }
             }
@@ -775,6 +792,21 @@ public class Database {
         }
     }
 
+    public void setPetSkillMaxpp(int pid, int skill, int maxpp) {
+        String sql = String.format("UPDATE pet SET maxpp_%c = %d WHERE petid = %d", (char)('a' + skill), maxpp, pid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
     public void updatePet(Pet pet) {
         if (pet.getPetid() < 0)
             return;
@@ -822,6 +854,68 @@ public class Database {
             System.out.println("VendorError: " + ex.getErrorCode());
         }
         return result;
+    }
+
+    public int getUserAtMapId(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT areaid FROM user where userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next()) {
+                     result = rs.getInt("areaid");
+                     sql = String.format("SELECT mapid FROM map where areaid = '%d'", result);
+                    if (stmt.execute(sql)) {
+                        rs = stmt.getResultSet();
+                        if (rs.next())
+                             result = rs.getInt("mapid");
+                    }
+                }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public int getUserAtAreaId(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT areaid FROM user where userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next())
+                     result = rs.getInt("areaid");
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public void setUserAtAreaId(int uid, int aid) {
+        String sql = String.format("UPDATE user SET areaid = %d WHERE userid = '%d'", aid, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
     }
 
     public void setPunishmentLevel(int uid, int punishment) {
@@ -927,15 +1021,60 @@ public class Database {
         return result;
     }
 
+    public void setUserRights(int uid, int rights) {
+        String sql = String.format("UPDATE user SET rights = %d WHERE userid = %d", rights, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void setUserProperty(int uid, int money) {
+        String sql = String.format("UPDATE user SET money = %d WHERE userid = %d", money, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void setUserType(int uid, int type) {
+        String sql = String.format("UPDATE user SET type = %d WHERE userid = %d", type, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+                                                                                                                                                                            
     public User logUser(String username, String password) {
-        String sql = String.format("SELECT userid, username, type FROM user where username = '%s' and password = '%s'", username, password);
+        String sql = String.format("SELECT userid, username, type, rights FROM user where username = '%s' and password = '%s'", username, password);
         User user = null;
         try {
             Statement stmt = connection.createStatement();
             if (stmt.execute(sql)) {
                 ResultSet rs = stmt.getResultSet();
                 if (rs.next()) {
-                     user = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"));
+                     user = new User(rs.getInt("userid"), rs.getString("username"), rs.getInt("type"), rs.getInt("rights"));
                 }
             }
             stmt.close();

@@ -45,6 +45,22 @@
         <servlet-name>ChatServlet</servlet-name>
         <jsp-file>/ChatServlet.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>CombatServlet</servlet-name>
+        <jsp-file>/CombatServlet.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>SetRightsServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.SetRightsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SetTypeServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.SetTypeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeUserPropertyServlet</servlet-name>
+        <servlet-class>com.pokemon.servlet.ChangeUserPropertyServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>action</servlet-name>
         <url-pattern>*.do</url-pattern>
@@ -76,6 +92,22 @@
     <servlet-mapping>
         <servlet-name>ChatServlet</servlet-name>
         <url-pattern>/chat_info</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CombatServlet</servlet-name>
+        <url-pattern>/combat</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetRightsServlet</servlet-name>
+        <url-pattern>/set_rights</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SetTypeServlet</servlet-name>
+        <url-pattern>/set_type</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeUserPropertyServlet</servlet-name>
+        <url-pattern>/change_user_property</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

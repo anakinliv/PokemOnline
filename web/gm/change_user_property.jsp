@@ -1,6 +1,6 @@
 <%-- 
-    Document   : search_user
-    Created on : 2011-12-12, 14:16:44
+    Document   : change_user_property
+    Created on : 2011-12-20, 15:07:40
     Author     : Sidney
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,6 +12,9 @@
     if (obj == null) {
         response.sendRedirect("../index.jsp");
     }
+    User user = (User)obj;
+    if (user.getType() != User.GM && user.getType() != User.ADMIN)
+        response.sendRedirect("../index.jsp");
 %>
 <html>
     <head>
@@ -38,57 +41,23 @@
             // create the data store
             var store = Ext.create('Ext.data.ArrayStore', {
                 fields: [
-                   {name: 'friendState', type: 'int'},
-                   {name: 'friendStateStr'},
                    {name: 'userid', type: 'int'},
-                   {name: 'username'}
+                   {name: 'username'},
+                   {name: 'money', type: 'int'}
                 ],
                 data: myData
             });
 
-            var sendRequestAction = Ext.create('Ext.Action', {
-                text: '发送好友申请',
-                disabled: true,
-                handler: function(widget, event) {
-                    var rec = grid.getSelectionModel().getSelection()[0];
-                    if (rec) {
-                        Ext.Ajax.request({
-                            url: '../send_friend_request',
-                            params: {
-                                uid:rec.data.userid
-                            },
-                            success: function(response, options) {}
-                        });
-                        rec.data.friendState = 1;
-                        rec.data.friendStateStr = "已发送好友申请";
-                        rec.commit();
-                    }
-                }
-            });
-
-            var acceptRequestAction = Ext.create('Ext.Action', {
-                text: '接受好友申请',
-                disabled: true,
-                handler: function(widget, event) {
-                    var rec = grid.getSelectionModel().getSelection()[0];
-                    if (rec) {
-                        Ext.Ajax.request({
-                            url: '../accept_friend_request',
-                            params: {
-                                uid:rec.data.userid
-                            },
-                            success: function(response, options) {}
-                        });
-                        rec.data.friendState = 3;
-                        rec.data.friendStateStr = "已为好友";
-                        rec.commit();
-                    }
-                }
-            });
-
-            var contextMenu = Ext.create('Ext.menu.Menu', {
-                items: [sendRequestAction, acceptRequestAction]
-            });
+            function setUserProperty(data) {
+                Ext.Ajax.request({
+                    url: '../change_user_property',
+                    params: {
+                        uid:data.userid,
+                        money:data.money
+                    },
+                    success: function(response, options) {}
+                });
+            }
 
             var searchTextField = Ext.create('Ext.form.field.Base', {
                 listeners :{
@@ -97,9 +66,14 @@
                     }
                 }
             });
+
             var searchbutton = Ext.create('Ext.Button', {
                 text: '搜索',
                 handler: doSearch
+            });
+
+            var cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
+                clicksToEdit: 1
             });
 
             var grid = Ext.create('Ext.grid.Panel', {
@@ -113,17 +87,20 @@
                         dataIndex: 'username'
                     },
                     {
-                        text     : '好友状态',
+                        text     : '金钱',
                         flex     : 1,
                         sortable : true,
-                        dataIndex: 'friendStateStr'
+                        dataIndex: 'money',
+                        editor: {
+                            xtype: 'numberfield',
+                            allowBlank: false,
+                            minValue: 0,
+                            maxValue: 100000
+                        }
                     }
                 ],
                 tbar:[searchTextField, searchbutton],
                 dockedItems: [{
-                    xtype: 'toolbar',
-                    items: [sendRequestAction, acceptRequestAction]
-                },{
                     xtype: 'toolbar',
                     dock: 'bottom',
                     items: []
@@ -139,33 +116,13 @@
                     }
                 },
                 title: '搜索结果',
-                stateful: false
+                stateful: false,
+                plugins: [cellEditing]
             });
-            grid.getSelectionModel().on({
-                selectionchange: function(sm, selections) {
-                    if (selections.length) {
-                        var rec = selections[0];
-                        switch (rec.data.friendState){
-                            case 3:
-                            case 1:
-                                sendRequestAction.disable();
-                                acceptRequestAction.disable();
-                                break;
-                            case 2:
-                                sendRequestAction.disable();
-                                acceptRequestAction.enable();
-                                break;
-                            case 0:
-                                sendRequestAction.enable();
-                                acceptRequestAction.disable();
-                                break;
-                        }
-                    }
-                    else {
-                        sendRequestAction.disable();
-                        acceptRequestAction.disable();
-                    }
-                }
+
+            grid.on('edit', function(editor, e) {
+                // commit the changes right after editing finished
+                setUserProperty(e.record.data);
             });
 
             var currentPage = 1;
@@ -177,7 +134,7 @@
                         params: {
                             username:currentSearchString,
                             page:from,
-                            type:"player"
+                            type:"gm"
                         },
                         success: function(response, options) {
                             searchResult = eval("(" + response.responseText + ')');
@@ -259,6 +216,6 @@
                     }]});
         });
         </script>
-        <title>Pokémon——查找用户</title>
+        <title>Pokémon——管理玩家权限</title>
     </head>
 </html>

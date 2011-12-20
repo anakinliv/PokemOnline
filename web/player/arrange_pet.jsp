@@ -31,6 +31,8 @@
         <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
+        <jsp:include flush="true" page="../chat.jsp"></jsp:include>
+        <jsp:include flush="true" page="nav.jsp"></jsp:include>
         <script type="text/javascript">
             Ext.require([
                 'Ext.grid.*',
@@ -93,8 +95,8 @@
             // Column Model shortcut array
     var columns = [
         {text: "宠物名", flex: 1, sortable: false, dataIndex: 'name'},
-        {text: "宠物类型", width: 70, sortable: false, dataIndex: 'type'},
-        {text: "经验值", width: 70, sortable: false, dataIndex: 'exp'}
+        {text: "宠物类型", flex: 1, sortable: false, dataIndex: 'type'},
+        {text: "经验值", flex: 1, sortable: false, dataIndex: 'exp'}
     ];
 
     // declare the source Grid
@@ -142,7 +144,6 @@
     });
     //Simple 'border layout' panel to house both grids
     var displayPanel = Ext.create('Ext.Panel', {
-        width        : 650,
         height       : 300,
         title        : '管理宠物',
         layout       : {
@@ -150,11 +151,41 @@
             align: 'stretch',
             padding: 5
         },
-        renderTo     : 'pet_list',
         defaults     : { flex : 1 }, //auto stretch
         items        : [activePetsGrid,petsInBoxGrid,dropPetBoxGrid]
         });
-    });
+
+            displayPanel.addDocked({
+                    id: "docked",
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: {text: "确定", handler: confirm}
+                });
+        
+        
+                Ext.create('Ext.Viewport', {
+                    layout: {
+                        type: 'border',
+                        padding: 5
+                    },
+                    defaults: {
+                        split: true
+                    },
+                    items: [createNavMenu(),{
+                        region: 'center',
+                        layout: {
+                            type: 'border',
+                            padding: 5
+                        },
+                        border: false,
+                        items: [
+                            {
+                                region: 'center',
+                                layout:'fit',
+                                items: displayPanel
+                            },createChatWidget()
+                        ]
+                    }]});
 
     function confirm() {
         var formStr = "<form id='DoArrangePetForm' name='DoArrangePetForm' action='../do_arrange_pet.do' method='post'>";
@@ -196,19 +227,13 @@
         }
     }
 
+    });
+
         </script>
         <title>Pokémon——管理宠物</title>
     </head>
 
     <body>
-        <div id="top">
-                <jsp:include flush="true" page="nav.jsp"></jsp:include>
-        </div>
-        <div id="main">
-            <div id="pet_list">
-            </div>
-            <button onclick="confirm();">确定</button>
-        </div>
         <div id="hiddenDiv" style="display:none">
         </div>
     </body>

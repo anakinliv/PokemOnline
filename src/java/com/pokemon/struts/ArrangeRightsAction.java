@@ -5,6 +5,7 @@
 
 package com.pokemon.struts;
 
+import com.pokemon.structure.User;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,7 +17,7 @@ import org.apache.struts.action.ActionMapping;
  *
  * @author Sidney
  */
-public class SearchUserInitAction extends org.apache.struts.action.Action {
+public class ArrangeRightsAction extends org.apache.struts.action.Action {
     
     /* forward name="success" path="" */
     private static final String SUCCESS = "success";
@@ -35,11 +36,13 @@ public class SearchUserInitAction extends org.apache.struts.action.Action {
     public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-
         HttpSession session = request.getSession();
         Object object = session.getAttribute("user");
         if (object == null)
-             return mapping.findForward(FAILED);
+            return mapping.findForward(FAILED);
+        User user = (User)object;
+        if (user.getType() != User.GM && user.getType() != User.ADMIN)
+            return mapping.findForward(FAILED);
         return mapping.findForward(SUCCESS);
     }
 }

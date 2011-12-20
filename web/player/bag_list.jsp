@@ -28,6 +28,8 @@
         <link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
         <script type="text/javascript" src="../js/ext/ext-all.js"></script>
         <script type="text/javascript" src="../js/ext/src/data/Connection.js"></script>
+        <jsp:include flush="true" page="../chat.jsp"></jsp:include>
+        <jsp:include flush="true" page="nav.jsp"></jsp:include>
         <script type="text/javascript">
             Ext.require([
                 'Ext.grid.*',
@@ -77,7 +79,7 @@
                             url: '../item_use_at_peace',
                             params: {iid:rec.get('id')},
                             success: function(response, options) {
-                                document.getElementById("resultDiv").innerHTML = response.responseText;
+                                Ext.Msg.alert('<b>使用物品</b>', response.responseText);
                             }
                         });
                         --rec.data.amount;
@@ -97,7 +99,7 @@
                            url: '../drop_item',
                            params: {iid:rec.get('id')},
                            success: function(response, options) {
-                               document.getElementById("resultDiv").innerHTML = response.responseText;
+                                Ext.Msg.alert('<b>丢弃物品</b>', response.responseText);
                            }
                         });
                         store.remove(rec);
@@ -157,10 +159,7 @@
                         }
                     }
                 },
-                height: 350,
-                width: 600,
                 title: '管理物品',
-                renderTo: 'bag_list',
                 stateful: false
             });
             grid.getSelectionModel().on({
@@ -174,20 +173,33 @@
                     }
                 }
             });
-        });
+
+                Ext.create('Ext.Viewport', {
+                    layout: {
+                        type: 'border',
+                        padding: 5
+                    },
+                    defaults: {
+                        split: true
+                    },
+                    items: [createNavMenu(),{
+                        region: 'center',
+                        layout: {
+                            type: 'border',
+                            padding: 5
+                        },
+                        border: false,
+                        items: [
+                            {
+                                region: 'center',
+                                layout:'fit',
+                                items: grid
+                            },createChatWidget()
+                        ]
+                    }]
+                });
+            });
         </script>
         <title>Pokémon——管理背包</title>
     </head>
-
-    <body>
-        <div id="top">
-                <jsp:include flush="true" page="nav.jsp"></jsp:include>
-        </div>
-        <div id="main">
-            <div id="bag_list">
-            </div>
-            <div id="resultDiv">
-            </div>
-        </div>
-    </body>
 </html>

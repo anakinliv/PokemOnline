@@ -1,6 +1,6 @@
-<%-- 
+<%--
     Document   : index
-    Created on : 2011-12-10, 18:47:32
+    Created on : 2011-12-19, 10:03:32
     Author     : Sidney
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -13,6 +13,8 @@
         response.sendRedirect("../index.jsp");
     }
     User user = (User)obj;
+    if (user.getType() != User.GM && user.getType() != User.ADMIN)
+        response.sendRedirect("../index.jsp");
 %>
 <html>
     <head>
@@ -42,7 +44,7 @@
                         items: [
                             {
                                 region: 'center',
-                                html: <%= "\"" + user.getUserName() + "：欢迎回来<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>\""%>
+                                html: <%= "\"" + user.getUserName() + "（管理员）：欢迎回来<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>\""%>
                             },createChatWidget()
                         ]
                     }]

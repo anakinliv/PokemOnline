@@ -22,7 +22,7 @@ public class CreateTestData {
     final private static int POKEMON_COUNT = 100;
     final private static int SKILL_PER_POKEMON = 6;
     final private static int PLAYER_COUNT = 100;
-    final private static int PM_COUNT = 10;
+    final private static int GM_COUNT = 10;
     final private static int ADMIN_COUNT = 1;
     final private static int ITEM_PER_PLAYER_COUNT = 5;
 
@@ -50,7 +50,11 @@ public class CreateTestData {
     private static void createMaps() throws SQLException {
         Database d = new Database();
         for (int i = 0; i < AREA_COUNT;++i)
-            d.addMap(0);
+            d.addMap(1);
+        for (int i = 0; i < AREA_COUNT;++i)
+            d.addMap(2);
+        for (int i = 0; i < AREA_COUNT;++i)
+            d.addMap(3);
         d.close();
     }
 
@@ -114,8 +118,14 @@ public class CreateTestData {
 
     private static void createPets() throws SQLException {
         Database d = new Database();
-        for (int i = 0; i < POKEMON_COUNT;++i)
+        for (int i = 0; i < POKEMON_COUNT;++i) {
             d.addPet(i + 1, String.format("³èÎï%d", i), 100, 100, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 1, 0, 0);
+            for (int j = 0;j < 2;++j) {
+                d.setPetSkill(i + 1, j, j + 1);
+                d.setPetSkillCurpp(i + 1, j, 0);
+                d.setPetSkillMaxpp(i + 1, j, 99);
+            }
+        }
         d.close();
     }
 
@@ -123,8 +133,8 @@ public class CreateTestData {
         Database d = new Database();
         for (int i = 0; i < PLAYER_COUNT;++i)
             d.addUser(String.format("player%d", i), "1", 1);
-        for (int i = 0; i < PM_COUNT;++i)
-            d.addUser(String.format("pm%d", i), "1", 2);
+        for (int i = 0; i < GM_COUNT;++i)
+            d.addUser(String.format("gm%d", i), "1", 2);
         for (int i = 0; i < ADMIN_COUNT;++i)
             d.addUser(String.format("admin%d", i), "1", 3);
         d.close();

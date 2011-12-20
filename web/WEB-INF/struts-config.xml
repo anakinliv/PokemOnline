@@ -22,13 +22,24 @@
 
     <action-mappings>
         <action name="LoginForm" path="/login" scope="request" type="com.pokemon.struts.LoginAction" validate="false">
-            <forward name="player" path="/player/index.jsp" redirect="true"/>
-            <forward name="gm" path="/gm/index.html" redirect="true"/>
-            <forward name="admin" path="/admin/index.html" redirect="true"/>
+            <forward name="player" path="/player/index.do" redirect="true"/>
+            <forward name="gm" path="/gm/index.do" redirect="true"/>
+            <forward name="admin" path="/admin/index.do" redirect="true"/>
             <forward name="failure" path="/index.jsp" redirect="true"/>
         </action>
+        <action path="/player/index" forward="/player/index.jsp"/>
+        <action path="/gm/index" forward="/gm/index.jsp"/>
+        <action path="/admin/index" forward="/admin/index.jsp"/>
         <action path="/logout" type="com.pokemon.struts.LogoutAction">
             <forward name="success" path="/index.jsp" redirect="true"/>
+        </action>
+        <action path="/player/adventure" type="com.pokemon.struts.AdventureAction">
+            <forward name="success" path="/player/adventure.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action path="/player/combat" type="com.pokemon.struts.CombatAction">
+            <forward name="success" path="/player/combat.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/player/friend_request" type="com.pokemon.struts.FriendRequestAction">
             <forward name="success" path="/player/friend_request.jsp"/>
@@ -42,16 +53,25 @@
             <forward name="success" path="/player/bag_list.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
-        <action path="/player/search_user" type="com.pokemon.struts.SearchUserInitAction">
-            <forward name="success" path="/player/search_user.jsp"/>
-            <forward name="failed" path="/index.jsp" redirect="true"/>
-        </action>
+        <action path="/player/search_user" forward="/player/search_user.jsp"/>
         <action path="/player/arrange_pet" type="com.pokemon.struts.ArrangePetAction">
             <forward name="success" path="/player/arrange_pet.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action name="DoArrangePetForm" path="/do_arrange_pet" scope="request" type="com.pokemon.struts.DoArrangePetAction" validate="false">
             <forward name="success" path="/player/arrange_pet.do" redirect="true"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action path="/gm/arrange_rights" type="com.pokemon.struts.ArrangeRightsAction">
+            <forward name="success" path="/gm/arrange_rights.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action path="/gm/change_user_property" type="com.pokemon.struts.ChangeUserPropertyAction">
+            <forward name="success" path="/gm/change_user_property.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action path="/admin/set_gm" type="com.pokemon.struts.SetGMAction">
+            <forward name="success" path="/admin/set_gm.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/Welcome" forward="/welcomeStruts.jsp"/>

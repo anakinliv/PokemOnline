@@ -1,6 +1,6 @@
 <%-- 
-    Document   : search_user
-    Created on : 2011-12-12, 14:16:44
+    Document   : set_gm
+    Created on : 2011-12-19, 14:54:15
     Author     : Sidney
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,6 +12,9 @@
     if (obj == null) {
         response.sendRedirect("../index.jsp");
     }
+    User user = (User)obj;
+    if (user.getType() != User.GM && user.getType() != User.ADMIN)
+        response.sendRedirect("../index.jsp");
 %>
 <html>
     <head>
@@ -38,56 +41,56 @@
             // create the data store
             var store = Ext.create('Ext.data.ArrayStore', {
                 fields: [
-                   {name: 'friendState', type: 'int'},
-                   {name: 'friendStateStr'},
+                   {name: 'type', type: 'int'},
                    {name: 'userid', type: 'int'},
-                   {name: 'username'}
+                   {name: 'username'},
+                   {name: 'type_str'}
                 ],
                 data: myData
             });
 
-            var sendRequestAction = Ext.create('Ext.Action', {
-                text: '发送好友申请',
+            function setType(uid, type) {
+                Ext.Ajax.request({
+                    url: '../set_type',
+                    params: {
+                        uid:uid,
+                        type:type
+                    },
+                    success: function(response, options) {}
+                });
+                resetActions(grid.getSelectionModel().getSelection());
+            }
+
+            var setToGMAction = Ext.create('Ext.Action', {
+                text: '设为管理员',
                 disabled: true,
                 handler: function(widget, event) {
                     var rec = grid.getSelectionModel().getSelection()[0];
                     if (rec) {
-                        Ext.Ajax.request({
-                            url: '../send_friend_request',
-                            params: {
-                                uid:rec.data.userid
-                            },
-                            success: function(response, options) {}
-                        });
-                        rec.data.friendState = 1;
-                        rec.data.friendStateStr = "已发送好友申请";
+                        rec.data.type = <%= User.GM %>;
+                        rec.data.type_str = "管理员";
                         rec.commit();
+                        setType(rec.data.userid, <%= User.GM %>);
                     }
                 }
             });
 
-            var acceptRequestAction = Ext.create('Ext.Action', {
-                text: '接受好友申请',
+            var setToPlayerAction = Ext.create('Ext.Action', {
+                text: '设为普通玩家',
                 disabled: true,
                 handler: function(widget, event) {
                     var rec = grid.getSelectionModel().getSelection()[0];
                     if (rec) {
-                        Ext.Ajax.request({
-                            url: '../accept_friend_request',
-                            params: {
-                                uid:rec.data.userid
-                            },
-                            success: function(response, options) {}
-                        });
-                        rec.data.friendState = 3;
-                        rec.data.friendStateStr = "已为好友";
+                        rec.data.type = <%= User.PLAYER %>;
+                        rec.data.type_str = "普通玩家";
                         rec.commit();
+                        setType(rec.data.userid, <%= User.PLAYER %>);
                     }
                 }
             });
 
             var contextMenu = Ext.create('Ext.menu.Menu', {
-                items: [sendRequestAction, acceptRequestAction]
+                items: [setToGMAction, setToPlayerAction]
             });
 
             var searchTextField = Ext.create('Ext.form.field.Base', {
@@ -113,16 +116,16 @@
                         dataIndex: 'username'
                     },
                     {
-                        text     : '好友状态',
+                        text     : '类型',
                         flex     : 1,
                         sortable : true,
-                        dataIndex: 'friendStateStr'
+                        dataIndex: 'type_str'
                     }
                 ],
                 tbar:[searchTextField, searchbutton],
                 dockedItems: [{
                     xtype: 'toolbar',
-                    items: [sendRequestAction, acceptRequestAction]
+                    items: [setToGMAction, setToPlayerAction]
                 },{
                     xtype: 'toolbar',
                     dock: 'bottom',
@@ -141,30 +144,34 @@
                 title: '搜索结果',
                 stateful: false
             });
+
+            function resetActions(selections) {
+                if (selections.length) {
+                    var rec = selections[0];
+                    switch (rec.data.type) {
+                        case <%= User.GM %>:
+                            setToGMAction.disable();
+                            setToPlayerAction.enable();
+                            break;
+                        case <%= User.PLAYER %>:
+                            setToGMAction.enable();
+                            setToPlayerAction.disable();
+                            break;
+                        default:
+                            setToGMAction.disable();
+                            setToPlayerAction.disable();
+                            break;
+                    }
+                }
+                else {
+                    setToGMAction.disable();
+                    setToPlayerAction.disable();
+                }
+            }
+
             grid.getSelectionModel().on({
                 selectionchange: function(sm, selections) {
-                    if (selections.length) {
-                        var rec = selections[0];
-                        switch (rec.data.friendState){
-                            case 3:
-                            case 1:
-                                sendRequestAction.disable();
-                                acceptRequestAction.disable();
-                                break;
-                            case 2:
-                                sendRequestAction.disable();
-                                acceptRequestAction.enable();
-                                break;
-                            case 0:
-                                sendRequestAction.enable();
-                                acceptRequestAction.disable();
-                                break;
-                        }
-                    }
-                    else {
-                        sendRequestAction.disable();
-                        acceptRequestAction.disable();
-                    }
+                    resetActions(selections);
                 }
             });
 
@@ -177,7 +184,7 @@
                         params: {
                             username:currentSearchString,
                             page:from,
-                            type:"player"
+                            type:"admin"
                         },
                         success: function(response, options) {
                             searchResult = eval("(" + response.responseText + ')');
@@ -212,6 +219,19 @@
 
             function showResult() {
                 clearResult();
+                for (i = 0;i < searchResult.users.length;++i) {
+                    switch (searchResult.users[i].type) {
+                        case <%= User.ADMIN %>:
+                            searchResult.users[i].type_str = "超级管理员";
+                            break;
+                        case <%= User.GM %>:
+                            searchResult.users[i].type_str = "管理员";
+                            break;
+                        case <%= User.PLAYER %>:
+                            searchResult.users[i].type_str = "普通玩家";
+                            break;
+                    }
+                }
                 store.loadData(searchResult.users);
 
                 pages=[];
@@ -259,6 +279,6 @@
                     }]});
         });
         </script>
-        <title>Pokémon——查找用户</title>
+        <title>Pokémon——管理玩家权限</title>
     </head>
 </html>

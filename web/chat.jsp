@@ -31,38 +31,48 @@
                     ]
                 });
 
+                var chattextfield = Ext.create('Ext.form.field.Text', {
+                    flex: 1,
+                    listeners :{
+                        specialKey :function(field,e){
+                            if (e.getKey() == Ext.EventObject.ENTER) sendMessage();
+                        }
+                    }
+                });
+
+                var sendbutton = Ext.create('Ext.Button', {
+                    text: '发送',
+                    handler: sendMessage
+                });
+
                 var chatgrid = Ext.create('Ext.grid.Panel', {
                     store: chatstore,
                     columnLines: true,
                     columns: [
                         {
                             text     : '用户名',
-                            flex     : 1,
                             sortable : true,
+                            flex: 1,
                             dataIndex: 'username'
                         },
                         {
                             text     : '内容',
-                            flex     : 1,
                             sortable : true,
+                            flex: 1,
                             dataIndex: 'chatcontent'
                         },
                         {
                             text     : '时间',
-                            flex     : 1,
                             sortable : true,
+                            flex: 1,
                             dataIndex: 'time'
                         }
                     ],
-                    height: 300
-                });
-
-                var chattextfield = Ext.create('Ext.form.field.Base', {
-                    listeners :{
-                        specialKey :function(field,e){
-                            if (e.getKey() == Ext.EventObject.ENTER) sendMessage();
-                        }
-                    }
+                    dockedItems: [{
+                        xtype: 'toolbar',
+                        dock: 'bottom',
+                        items: [chattextfield, sendbutton]
+                    }]
                 });
 
 Ext.define('ChatUnit', {
@@ -96,34 +106,6 @@ Ext.define('ChatUnit', {
                         chattextfield.setValue("");
                 }
 
-                var sendbutton = Ext.create('Ext.Button', {
-                    text: '发送',
-                    handler: sendMessage
-                });
-
-                
-                var typePanel = Ext.create('Ext.Panel', {
-                    layout: {
-                        type: 'hbox',
-                        padding: 5
-                    },
-                    items: [
-                        {
-                            region: "center",
-                            border: false,
-                            items: chattextfield
-                        },
-                        {
-                            region: "east",
-                            border: false,
-                            items: sendbutton
-                        }]
-                });
-                var result = Ext.create('Ext.Panel', {
-                    title   : '聊天',
-                    items: [chatgrid, typePanel]
-                });
-
                 setTimeout(getChat, 1000);
 
                 function getChat() {
@@ -143,6 +125,15 @@ Ext.define('ChatUnit', {
                         }
                     });
                 }
-                return result;
+                
+                return {region: 'east',
+                        minWidth : 200,
+                        width : 200,
+                        title: '聊天',
+                        layout:'fit',
+                        split: true,
+                        animCollapse: true,
+                        collapsible: true,
+                        items : chatgrid};
             }
         </script>

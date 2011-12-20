@@ -13,9 +13,16 @@
     User user = (User)obj;
     String username = request.getParameter("username");
     String pageStr = request.getParameter("page");
+    String typeStr = request.getParameter("type");
     Integer pageNumber;
-    if (username == null)
-        username = "player1";
+    if (username == null) {%>
+{
+"totalPages" : <%= 0 %>,
+"page"       : <%= 0 %>,
+"users"      : []}
+<%
+        return;
+    }
     if (pageStr == null || pageStr == "")
         pageNumber = 1;
     else
@@ -32,26 +39,42 @@
      for (int i = 0;i < result.result.size();++i) {
          ++count;
          User currentUser = (User)result.result.elementAt(i);
-         int state = db.getUserFriendState(user.getUid(), currentUser.getUid());
+         int state = 0;
          String stateStr = "";
-         switch(state) {
-             case 3:
-                 stateStr = "已为好友";
-                 break;
-             case 2:
-                 stateStr = "收到来自对方的好友申请";
-                 break;
-             case 1:
-                 stateStr = "已发送好友申请";
-                 break;
-             case 0:
-                 stateStr = "无";
-                 break;
-         }
-%><%= count == 1 ? "" : "," %>
+         if ("player".equals(typeStr)) {
+             state = db.getUserFriendState(user.getUid(), currentUser.getUid());
+             switch(state) {
+                 case 3:
+                     stateStr = "已为好友";
+                     break;
+                 case 2:
+                     stateStr = "收到来自对方的好友申请";
+                     break;
+                 case 1:
+                     stateStr = "已发送好友申请";
+                     break;
+                 case 0:
+                     stateStr = "无";
+                     break;
+             }
+         } else if ("gm".equals(typeStr)) {
+             state = currentUser.getRights();
+         } else if ("admin".equals(typeStr)) {
+             state = currentUser.getType();
+         } else { %>
+{
+"totalPages" : <%= 0 %>,
+"page"       : <%= 0 %>,
+"users"      : []}
+<%
+            return;
+        }%><%= count == 1 ? "" : "," %>
   {
-    "friendState"    : <%= state %>,
+<% if ("player".equals(typeStr)) { %>    "friendState"    : <%= state %>,
     "friendStateStr" : '<%= stateStr %>',
+<% } else if ("gm".equals(typeStr)) { %> "rights" : <%= state %>,
+    "money"          : <%= currentUser.getMoney() %>,
+<% } else if ("admin".equals(typeStr)) { %> "type" : <%= state %>,<% } %>
     "userid"         : <%= currentUser.getUid() %>,
     "username"       : "<%= currentUser.getUserName() %>"
   }
