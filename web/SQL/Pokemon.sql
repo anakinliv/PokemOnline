@@ -148,6 +148,7 @@ create table item
    itemid               bigint auto_increment not null,
    itemname             char(10) not null,
    description          varchar(100),
+   price                int not null,
    primary key (itemid)
 )
 ENGINE = InnoDB
@@ -262,6 +263,7 @@ create table skill
    typeid               smallint not null,
    skillname            varchar(10) not null,
    description          varchar(100) not null,
+   damage               int not null,
    primary key (skillid)
 )
 ENGINE = InnoDB

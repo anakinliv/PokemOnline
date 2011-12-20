@@ -17,13 +17,15 @@ public class Skill {
     String description;
     Type type;
     Vector<Effect> effects;
+    int damage;
 
-    public Skill(int sid, String name, String description, Type type, Vector<Effect> effects) {
+    public Skill(int sid, String name, String description, Type type, Vector<Effect> effects, int damage) {
         this.sid = sid;
         this.name = name;
         this.description = description;
         this.type = type;
         this.effects = effects;
+        this.damage = damage;
     }
 
     public String getDescription() {
@@ -66,5 +68,11 @@ public class Skill {
         this.effects = effects;
     }
 
+    public int getDamage() {
+        return damage;
+    }
 
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
 }

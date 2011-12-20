@@ -15,15 +15,14 @@ public class Item {
     int iid=-1;
     String name="";
     String description="";
+    int price=0;
     Vector<Effect> effects = new Vector<Effect>();
 
-    public Item() {
-    }
-
-    public Item(int iid, String name, String description) {
+    public Item(int iid, String name, String description, int price) {
         this.iid = iid;
         this.name = name;
         this.description = description;
+        this.price = price;
     }
 
     public String getDescription() {
@@ -56,6 +55,14 @@ public class Item {
 
     public void addEffect(Effect e) {
         effects.add(e);
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 
 }

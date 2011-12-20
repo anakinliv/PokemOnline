@@ -52,12 +52,12 @@ public class Database {
         }
     }
 
-    public void addItem(String itemname, String description) throws SQLException {
+    public void addItem(String itemname, String description, int price) throws SQLException {
         String sql = null;
         if (description == null)
-            sql = String.format("INSERT INTO item(itemname) VALUES('%s')", itemname);
+            sql = String.format("INSERT INTO item(itemname, price) VALUES('%s', '%d')", itemname, price);
         else
-            sql = String.format("INSERT INTO item(itemname, description) VALUES('%s', '%s')", itemname, description);
+            sql = String.format("INSERT INTO item(itemname, description, price) VALUES('%s', '%s', '%d')", itemname, description, price);
         Statement stmt = connection.createStatement();
         stmt.execute(sql);
         stmt.execute("COMMIT;");
@@ -96,8 +96,8 @@ public class Database {
         stmt.close();
     }
 
-    public void addSkill(int typeid, String skillname, String description) throws SQLException {
-        String sql = String.format("INSERT INTO skill(typeid, skillname, description) VALUES('%d', '%s', '%s')", typeid, skillname, description);
+    public void addSkill(int typeid, String skillname, String description, int damage) throws SQLException {
+        String sql = String.format("INSERT INTO skill(typeid, skillname, description, damage) VALUES('%d', '%s', '%s', '%d')", typeid, skillname, description, damage);
         Statement stmt = connection.createStatement();
         stmt.execute(sql);
         stmt.execute("COMMIT;");
@@ -321,14 +321,14 @@ public class Database {
     
     public Item getItem(int iid) {
         Item result = null;
-        String sql = String.format("SELECT itemname, description FROM item WHERE itemid = '%d'", iid);
+        String sql = String.format("SELECT itemname, description, price FROM item WHERE itemid = '%d'", iid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
             {
-                result = new Item(iid, rs.getString("itemname"), rs.getString("description"));
+                result = new Item(iid, rs.getString("itemname"), rs.getString("description"), rs.getInt("price"));
                 sql = String.format("SELECT effectid FROM item_effect WHERE itemid = '%d'", iid);
                 stmt.execute(sql);
                 rs = stmt.getResultSet();
@@ -614,13 +614,13 @@ public class Database {
 
     public Skill getSkill(int sid) {
         Skill result = null;
-        String sql = String.format("SELECT typeid, skillname, description FROM skill WHERE skillid = '%d'", sid);
+        String sql = String.format("SELECT typeid, skillname, description, damage FROM skill WHERE skillid = '%d'", sid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
-                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")), getSkillEffects(sid));
+                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")), getSkillEffects(sid), rs.getInt("price"));
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors

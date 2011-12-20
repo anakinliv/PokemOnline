@@ -29,7 +29,7 @@ public class CreateTestData {
     private static void createItems() throws SQLException {
         Database d = new Database();
         for (int i = 0; i < ITEM_COUNT;++i)
-            d.addItem(String.format("物品%d", i), String.format("物品%d的描述", i));
+            d.addItem(String.format("物品%d", i), String.format("物品%d的描述", i), i);
         d.close();
     }
 
@@ -68,7 +68,7 @@ public class CreateTestData {
     private static void createSkills() throws SQLException {
         Database d = new Database();
         for (int i = 0; i < SKILL_COUNT;++i)
-            d.addSkill(i % TYPE_COUNT + 1, String.format("技能%d", i), String.format("技能%d的描述", i));
+            d.addSkill(i % TYPE_COUNT + 1, String.format("技能%d", i), String.format("技能%d的描述", i), i);
         d.close();
     }
 
