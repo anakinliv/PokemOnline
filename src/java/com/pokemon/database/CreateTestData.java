@@ -118,8 +118,14 @@ public class CreateTestData {
 
     private static void createPets() throws SQLException {
         Database d = new Database();
-        for (int i = 0; i < POKEMON_COUNT;++i)
+        for (int i = 0; i < POKEMON_COUNT;++i) {
             d.addPet(i + 1, String.format("³èÎï%d", i), 100, 100, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 1, 0, 0);
+            for (int j = 0;j < 2;++j) {
+                d.setPetSkill(i + 1, j, j + 1);
+                d.setPetSkillCurpp(i + 1, j, 0);
+                d.setPetSkillMaxpp(i + 1, j, 99);
+            }
+        }
         d.close();
     }
 

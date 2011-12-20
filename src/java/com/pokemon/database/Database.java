@@ -12,6 +12,8 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import com.pokemon.structure.*;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -208,6 +210,19 @@ public class Database {
         stmt.execute(sql);
         stmt.execute("COMMIT;");
         stmt.close();
+    }
+
+    public void setPetSkill(int pid, int skillPos, int sid) {
+            String skill = sid == 0 ? "null" : String.valueOf(sid);
+            String sql = String.format("UPDATE pet SET skill_%c = %s WHERE petid = %d", (char) ('a' + skillPos), skill, pid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public User getUserOverallInfo(int uid) {
@@ -763,6 +778,21 @@ public class Database {
 
     public void setPetSkillCurpp(int pid, int skill, int curpp) {
         String sql = String.format("UPDATE pet SET curpp_%c = %d WHERE petid = %d", (char)('a' + skill), curpp, pid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public void setPetSkillMaxpp(int pid, int skill, int maxpp) {
+        String sql = String.format("UPDATE pet SET maxpp_%c = %d WHERE petid = %d", (char)('a' + skill), maxpp, pid);
         try {
             Statement stmt = connection.createStatement();
             stmt.execute(sql);
