@@ -44,7 +44,7 @@ public class Database {
             connection =
                     DriverManager.getConnection("jdbc:mysql://" + dbAddress +
                     ":" + dbPort + "/" + dbName + "?" +
-                    "user=root&password=rt4px6D.3&useUnicode=true&characterEncoding=UTF-8");
+                    "user=root&password=tecton&useUnicode=true&characterEncoding=UTF-8");
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -620,7 +620,7 @@ public class Database {
             stmt.execute(sql);
             ResultSet rs = stmt.getResultSet();
             if (rs.next())
-                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")), getSkillEffects(sid), rs.getInt("price"));
+                result = new Skill(sid, rs.getString("skillname"), rs.getString("description"), getType(rs.getInt("typeid")), getSkillEffects(sid), rs.getInt("damage"));
             stmt.close();
         } catch (SQLException ex) {
             // handle any errors
