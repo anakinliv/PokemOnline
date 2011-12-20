@@ -825,6 +825,68 @@ public class Database {
         return result;
     }
 
+    public int getUserAtMapId(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT areaid FROM user where userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next()) {
+                     result = rs.getInt("areaid");
+                     sql = String.format("SELECT mapid FROM map where areaid = '%d'", result);
+                    if (stmt.execute(sql)) {
+                        rs = stmt.getResultSet();
+                        if (rs.next())
+                             result = rs.getInt("mapid");
+                    }
+                }
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public int getUserAtAreaId(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT areaid FROM user where userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next())
+                     result = rs.getInt("areaid");
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public void setUserAtAreaId(int uid, int aid) {
+        String sql = String.format("UPDATE user SET areaid = %d WHERE userid = '%d'", aid, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
     public void setPunishmentLevel(int uid, int punishment) {
         String sql = String.format("UPDATE user SET punishment_level  = 'd' where userid = '%d'", punishment, uid);
         try {

@@ -71,4 +71,8 @@ public class User {
     public int getRights() {
         return rights;
     }
+
+    public void setRights(int rights) {
+        this.rights = rights;
+    }
 }

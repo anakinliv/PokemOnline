@@ -50,7 +50,11 @@ public class CreateTestData {
     private static void createMaps() throws SQLException {
         Database d = new Database();
         for (int i = 0; i < AREA_COUNT;++i)
-            d.addMap(0);
+            d.addMap(1);
+        for (int i = 0; i < AREA_COUNT;++i)
+            d.addMap(2);
+        for (int i = 0; i < AREA_COUNT;++i)
+            d.addMap(3);
         d.close();
     }
 
