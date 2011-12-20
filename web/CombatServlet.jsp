@@ -58,14 +58,12 @@
   "commandResult" : <%= commandResult %>,
   "requestThing"  : <%= requestThing %>,
 <%
-    switch (requestThing) {
-        case REQUEST_MAIN_INFO:
 %>
   "mainInfo" :
   [
 <%
-            for (int i = 0;i < 2;++i) {
-                Pet pet = combatStates.getState(i).getCurrentPet();
+    for (int i = 0;i < 2;++i) {
+        Pet pet = combatStates.getState(i).getCurrentPet();
 %>
     <%= i == 0 ? "" : "," %>{ "id" : '<%= pet.getPetid() %>',
       "name" : '<%= pet.getName() %>',
@@ -73,8 +71,13 @@
       "maxhp" : '<%= pet.getMax_hp() %>',
       "state" : '<%= pet.getPm_status() %>'}
 <%
-            }
-            break;
+    }
+    if (requestThing != REQUEST_MAIN_INFO) {
+%>
+],
+<%
+    }
+    switch (requestThing) {
         case REQUEST_ITEM_INFO:
 %>
   "iteminfo" :

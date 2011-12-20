@@ -61,6 +61,7 @@
                                     }
                                 }));
                             }
+                            dealWithMainInfo(jsondata);
                             pos = skillAction.getPosition();
                             contextMenu.showAt(skillAction.getPosition());
                             pos[1] = pos[1] - contextMenu.getHeight();
@@ -93,6 +94,7 @@
                                     }
                                 }));
                             }
+                            dealWithMainInfo(jsondata);
                             pos = itemAction.getPosition();
                             contextMenu.showAt(itemAction.getPosition());
                             pos[1] = pos[1] - contextMenu.getHeight();
@@ -125,6 +127,7 @@
                                     }
                                 }));
                             }
+                            dealWithMainInfo(jsondata);
                             pos = petAction.getPosition();
                             contextMenu.showAt(petAction.getPosition());
                             pos[1] = pos[1] - contextMenu.getHeight();
@@ -290,6 +293,26 @@
                             },createChatWidget()
                         ]
                     }]
+                });
+
+                function dealWithMainInfo(jsondata) {
+                    myName.setValue(jsondata.mainInfo[0].name);
+                    myHp.setValue("" + jsondata.mainInfo[0].currenthp + "/" + jsondata.mainInfo[0].maxhp);
+                    myState.setValue(jsondata.mainInfo[0].state);
+                    enemyName.setValue(jsondata.mainInfo[1].name);
+                    enemyHp.setValue("" + jsondata.mainInfo[1].currenthp + "/" + jsondata.mainInfo[1].maxhp);
+                    enemyState.setValue(jsondata.mainInfo[1].state);
+                }
+                
+                Ext.Ajax.request({
+                    url: '../combat',
+                    params: {
+                        skill:1
+                    },
+                    success: function(response, options) {
+                        var jsondata = eval("(" + response.responseText + ')');
+                        dealWithMainInfo(jsondata);
+                    }
                 });
             });
         </script>

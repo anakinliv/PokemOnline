@@ -41,17 +41,18 @@ public class CombatController {
         return 1;
     }
 
-    private static boolean useSkill(CombatStates states, int skillIndex, boolean fromUser1) {
+    private static boolean useSkill(CombatStates states, int skillid, boolean fromUser1) {
         // Finished
         CombatState userState = states.getState(fromUser1 ? 0 : 1);
-        Skill skill;
         try {
-            skill= userState.getCurrentPet().getSkills().elementAt(skillIndex);
-            if (!userState.useSkill(skill.getSid()))
+            if (!userState.useSkill(skillid))
                 return false;
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
         }
+        Database db = Database.getNewDatabase();
+        Skill skill = db.getSkill(skillid);
+        Database.databaseAfterUse(db);
         Vector<Effect> currentSkillEffect = skill.getEffects();
         for (Effect effect : currentSkillEffect) {
             if (effect.targetIsSelf())
