@@ -42,7 +42,7 @@
             requestThing = REQUEST_ITEM_INFO;
         else if (request.getParameter("skill") != null)
             requestThing = REQUEST_SKILL_INFO;
-        else if (request.getParameter("skill") != null)
+        else if (request.getParameter("pet") != null)
             requestThing = REQUEST_ALL_PETS_INFO;
     } else {
         String commandStr = (String) obj;
@@ -100,18 +100,27 @@
             Vector<Skill> skills = combatStates.getState(0).getCurrentPet().getSkills();
             Vector<Integer> maxpps = combatStates.getState(0).getCurrentPet().getMaxpps();
             Vector<Integer> curpps = combatStates.getState(0).getCurrentPet().getCurpps();
+            boolean first = true;
             for (int i = 0;i < skills.size();++i) {
+                if (skills.elementAt(i) == null)
+                    continue;
 %>
-    <%= i == 0 ? "" : "," %>{ "id" : '<%= skills.elementAt(i).getSid() %>',
+    <%= first ? "" : "," %>{ "id" : '<%= skills.elementAt(i).getSid() %>',
       "name" : '<%= skills.elementAt(i).getName() %>',
       "description" : '<%= skills.elementAt(i).getDescription() %>',
       "type" : '<%= skills.elementAt(i).getType().getName() %>',
       "curpp" : '<%= curpps.elementAt(i).intValue() %>',
       "maxpp" : '<%= maxpps.elementAt(i).intValue() %>'}
 <%
+                first = false;
             }
             break;
         case REQUEST_ALL_PETS_INFO:
+%>
+  "currentPetId" : <%= combatStates.getState(0).getCurrentPetIndex() %>,
+  "petinfo" :
+  [
+<%
             Vector<Pet> petsOfUser = combatStates.getState(0).getPetsOfUser();
             for (int i = 0;i < petsOfUser.size();++i) {
 %>
@@ -125,5 +134,5 @@
     }
 %>
   ],
-  "combatInfo"    : <%= combatStates.getLastCombatInfo() %>
+  "combatInfo"    : "<%= combatStates.getLastCombatInfo() %>"
 }

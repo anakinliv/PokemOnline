@@ -44,15 +44,29 @@
                 
                 function showSkill() {
                     contextMenu.removeAll();
-                    for (i = 0;i < testData.length;++i)
-                        contextMenu.add(Ext.create('Ext.Action', {
-                                text: testData[i],
-                                index: i,
-                                handler: function () {
-                                    alert("" +testData[this.index]);
-                                }
-                            }));
-                    contextMenu.showAt(skillAction.getPosition());
+                    Ext.Ajax.request({
+                        url: '../combat',
+                        params: {
+                            skill:1
+                        },
+                        success: function(response, options) {
+                            contextMenu.removeAll();
+                            var jsondata = eval("(" + response.responseText + ')');
+                            for (i = 0;i < jsondata.skillinfo.length;++i) {
+                                contextMenu.add(Ext.create('Ext.Action', {
+                                    text: jsondata.skillinfo[i].name,
+                                    sid: jsondata.skillinfo[i].id,
+                                    handler: function () {
+                                        alert("" +this.sid);
+                                    }
+                                }));
+                            }
+                            pos = skillAction.getPosition();
+                            contextMenu.showAt(skillAction.getPosition());
+                            pos[1] = pos[1] - contextMenu.getHeight();
+                            contextMenu.showAt(pos);
+                        }
+                    });
                 }
 
                 var skillAction = Ext.create('Ext.Button', {
@@ -61,7 +75,30 @@
                 });
 
                 function showItem() {
-                    alert(1);
+                    contextMenu.removeAll();
+                    Ext.Ajax.request({
+                        url: '../combat',
+                        params: {
+                            item:1
+                        },
+                        success: function(response, options) {
+                            contextMenu.removeAll();
+                            var jsondata = eval("(" + response.responseText + ')');
+                            for (i = 0;i < jsondata.iteminfo.length;++i) {
+                                contextMenu.add(Ext.create('Ext.Action', {
+                                    text: jsondata.iteminfo[i].name,
+                                    iid: jsondata.iteminfo[i].id,
+                                    handler: function () {
+                                        alert("" +this.iid);
+                                    }
+                                }));
+                            }
+                            pos = itemAction.getPosition();
+                            contextMenu.showAt(itemAction.getPosition());
+                            pos[1] = pos[1] - contextMenu.getHeight();
+                            contextMenu.showAt(pos);
+                        }
+                    });
                 }
 
                 var itemAction = Ext.create('Ext.Button', {
@@ -70,7 +107,30 @@
                 });
 
                 function showPet() {
-                    alert(1);
+                    contextMenu.removeAll();
+                    Ext.Ajax.request({
+                        url: '../combat',
+                        params: {
+                            pet:1
+                        },
+                        success: function(response, options) {
+                            contextMenu.removeAll();
+                            var jsondata = eval("(" + response.responseText + ')');
+                            for (i = 0;i < jsondata.petinfo.length;++i) {
+                                contextMenu.add(Ext.create('Ext.Action', {
+                                    text: jsondata.petinfo[i].name,
+                                    pid: jsondata.petinfo[i].id,
+                                    handler: function () {
+                                        alert("" +this.pid);
+                                    }
+                                }));
+                            }
+                            pos = petAction.getPosition();
+                            contextMenu.showAt(petAction.getPosition());
+                            pos[1] = pos[1] - contextMenu.getHeight();
+                            contextMenu.showAt(pos);
+                        }
+                    });
                 }
 
                 var petAction = Ext.create('Ext.Button', {
@@ -91,6 +151,7 @@
                     flex: 1,
                     preserveRatio:true,
                     autoEl: {
+                        id: 'myHeadImg',
                         tag: 'img',
                         src: "../image/test.jpg"
                      }
@@ -202,7 +263,7 @@
                     dockedItems: [{
                         xtype: 'toolbar',
                         dock: 'bottom',
-                        items: [skillAction, itemAction, petAction, escapeAction]
+                        items: [skillAction, '-', itemAction, '-', petAction, '-', escapeAction]
                     }]
                 });
 
