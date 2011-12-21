@@ -348,6 +348,26 @@ public class Database {
         return result;
     }
 
+    public Vector<Item> getAllItemsWithoutEffect() {
+        Vector<Item> result = new Vector<Item>();
+        String sql = String.format("SELECT itemid, itemname, description, price FROM item");
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            while (rs.next())
+                result.add(new Item(rs.getInt("itemid"), rs.getString("itemname"), rs.getString("description"), rs.getInt("price")));
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return result;
+        }
+        return result;
+    }
+
     public int getUserFriendState(int uid1, int uid2) {
         int result = 0;
         String sql = String.format("SELECT usera, userb FROM friend WHERE (usera = '%d' AND userb = '%d') OR (usera = '%d' AND userb = '%d')", uid1, uid2, uid2, uid1);
@@ -409,6 +429,31 @@ public class Database {
         }
 
         return result;
+    }
+
+    public void addUserItem(int uid, int iid, int amount) {
+        String sql = String.format("SELECT count FROM bag WHERE userid = '%d' AND itemid = '%d'", uid, iid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            ResultSet rs = stmt.getResultSet();
+            if (rs.next()) {
+                int ocount = rs.getInt("count");
+                sql = String.format("UPDATE bag SET count = %d WHERE userid = '%d' AND itemid = '%d'", ocount + amount, uid, iid);
+                stmt.execute(sql);
+                stmt.execute("COMMIT;");
+            } else {
+                addBag(uid, iid, amount);
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return;
+        }
+        return;
     }
 
     public int getItemCount(int uid, int iid) {
@@ -901,6 +946,41 @@ public class Database {
             System.out.println("VendorError: " + ex.getErrorCode());
         }
         return result;
+    }
+
+    public int getUserCurrentMoney(int uid) {
+        int result = 0;
+        String sql = String.format("SELECT money FROM user where userid = '%d'", uid);
+        try {
+            Statement stmt = connection.createStatement();
+            if (stmt.execute(sql)) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs.next())
+                     result = rs.getInt("money");
+            }
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return result;
+    }
+
+    public void setUserCurrentMoney(int uid, int mouney) {
+        String sql = String.format("UPDATE user SET money = %d WHERE userid = '%d'", mouney, uid);
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute(sql);
+            stmt.execute("COMMIT;");
+            stmt.close();
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
     }
 
     public void setUserAtAreaId(int uid, int aid) {

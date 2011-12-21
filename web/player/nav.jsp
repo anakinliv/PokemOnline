@@ -20,6 +20,10 @@
                             handler: Ext.Function.pass(handleAction, 'adventure.do')
                         },{
                             xtype:'button',
+                            text: '购买物品',
+                            handler: Ext.Function.pass(handleAction, 'trade_item.do')
+                        },{
+                            xtype:'button',
                             text: '管理宠物',
                             handler: Ext.Function.pass(handleAction, 'arrange_pet.do')
                         },{
