@@ -7,6 +7,7 @@
 
 <struts-config>
     <form-beans>
+        <form-bean name="DoTradeItemForm" type="com.pokemon.struts.DoTradeItemForm"/>
         <form-bean name="DoArrangePetForm" type="com.pokemon.struts.DoArrangePetForm"/>
         <form-bean name="LoginForm" type="com.pokemon.struts.LoginForm"/>
     
@@ -54,12 +55,20 @@
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/player/search_user" forward="/player/search_user.jsp"/>
+        <action path="/player/trade_item" type="com.pokemon.struts.TradeItemAction">
+            <forward name="success" path="/player/trade_item.jsp"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
         <action path="/player/arrange_pet" type="com.pokemon.struts.ArrangePetAction">
             <forward name="success" path="/player/arrange_pet.jsp"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action name="DoArrangePetForm" path="/do_arrange_pet" scope="request" type="com.pokemon.struts.DoArrangePetAction" validate="false">
             <forward name="success" path="/player/arrange_pet.do" redirect="true"/>
+            <forward name="failed" path="/index.jsp" redirect="true"/>
+        </action>
+        <action name="DoTradeItemForm" path="/do_trade_item" scope="request" type="com.pokemon.struts.DoTradeItemAction" validate="false">
+            <forward name="success" path="/player/trade_item.do" redirect="true"/>
             <forward name="failed" path="/index.jsp" redirect="true"/>
         </action>
         <action path="/gm/arrange_rights" type="com.pokemon.struts.ArrangeRightsAction">
