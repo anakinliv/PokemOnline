@@ -30,7 +30,7 @@
                 <input type="password" id="password" name="password" />
                 <button type="submit">登陆</button>
             </html:form>
-                <a href="regist.html">注册</a>
+                <a href="register.jsp">注册</a>
         </div>
     </body>
 </html>

@@ -7,6 +7,7 @@
 
 <struts-config>
     <form-beans>
+        <form-bean name="RegisterForm" type="com.pokemon.struts.RegisterForm"/>
         <form-bean name="DoArrangePetForm" type="com.pokemon.struts.DoArrangePetForm"/>
         <form-bean name="LoginForm" type="com.pokemon.struts.LoginForm"/>
     
@@ -26,6 +27,10 @@
             <forward name="gm" path="/gm/index.do" redirect="true"/>
             <forward name="admin" path="/admin/index.do" redirect="true"/>
             <forward name="failure" path="/index.jsp" redirect="true"/>
+        </action>
+        <action name="RegisterForm" path="/register" scope="request" type="com.pokemon.struts.RegisterAction" validate="false">
+            <forward name="success" path="/index.jsp" redirect="true"/>
+            <forward name="failure" path="/register.jsp" redirect="true"/>
         </action>
         <action path="/player/index" forward="/player/index.jsp"/>
         <action path="/gm/index" forward="/gm/index.jsp"/>
