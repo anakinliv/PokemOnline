@@ -271,6 +271,7 @@ create table skill_effect
 (
    skillid              int not null,
    effectid             bigint not null,
+   accuracy             int not null,
    primary key (skillid, effectid)
 );
 
