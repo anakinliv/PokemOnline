@@ -258,6 +258,7 @@ create table skill
    typeid               smallint not null,
    skillname            varchar(10) not null,
    description          varchar(100) not null,
+   pp                   smallint,
    primary key (skillid)
 )
 ENGINE = InnoDB
@@ -271,7 +272,7 @@ create table skill_effect
 (
    skillid              int not null,
    effectid             bigint not null,
-   skilltype            int,
+   skilltype            smallint,
    accuracy             int not null,
    primary key (skillid, effectid)
 );
